@@ -32,13 +32,7 @@
 > 
 > *El script se encarga de crear el entorno virtual, instalar PyTorch con soporte de aceleración gráfica GPU (CUDA) o CPU, y ejecutar el parser offline.*
 
----
 
-### 👨‍💻 Creador de la Versión Premium
-Desarrollado y optimizado por `José Manuel Caamaño González` ([LinkedIn](https://www.linkedin.com/in/jmcaamanog/)), Arquitecto Técnico y BIM Manager.
-*Bajo la filosofía ConTech de construir puentes entre la construcción tradicional (AECO) y la automatización digital, esta utilidad procesa tus datos locales con máxima privacidad sin depender de APIs de terceros ni enviar información al exterior.*
-
----
 
 ## Descripción
 
@@ -111,19 +105,13 @@ Esta sección está diseñada para ayudarte a poner en marcha la aplicación pas
 
 ## 🗺️ Hoja de Ruta (Roadmap)
 
-*   **Fase 1: Conversión básica offline y aceleración CUDA** [✔️ Completado]
-    *   Integración del parser local basado en Marker.
-    *   Configuración automática de hardware para aceleración por GPU NVIDIA CUDA.
-*   **Fase 2: Interfaz acrílica y navegación nativa** [✔️ Completado]
-    *   Rediseño estilo acrílico oscuro de Windows 11.
-    *   Sistema de navegación nativo en columnas ultra rápido y adaptativo.
-*   **Fase 3: Procesamiento en lote masivo y escaneo de carpetas** [✔️ Completado]
-    *   Procesamiento múltiple y descargas agrupadas en ZIP.
-    *   Lectura y escritura local automática en directorios absolutos de Windows.
-*   **Fase 4: Exportación extendida a Excel y CSV** [⏳ Planificado]
-    *   Módulo para volcar tablas detectadas en los PDFs directamente a archivos `.xlsx` independientes.
-*   **Fase 5: Previsualización en vivo en Markdown** [⏳ Planificado]
-    *   Visor de doble panel en tiempo real para ver el resultado de la conversión antes de descargar.
+| Fase | Hito / Descripción | Estado |
+| :---: | :--- | :---: |
+| **1** | **Conversión básica offline y aceleración CUDA:** Integración del parser local basado en Marker y configuración de GPU NVIDIA CUDA. | ✔️ Completado |
+| **2** | **Interfaz acrílica y navegación nativa:** Rediseño estilo acrílico oscuro de Windows 11 y sistema de navegación en columnas. | ✔️ Completado |
+| **3** | **Procesamiento en lote masivo y escaneo de carpetas:** Procesamiento múltiple (ZIP) y lectura/escritura en directorios locales. | ✔️ Completado |
+| **4** | **Exportación extendida a Excel y CSV:** Volcar tablas detectadas en los PDFs directamente a archivos `.xlsx` independientes. | ⏳ Planificado |
+| **5** | **Previsualización en vivo en Markdown:** Visor de doble panel en tiempo real para ver el resultado de la conversión antes de descargar. | ⏳ Planificado |
 
 ---
 
