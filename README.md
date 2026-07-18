@@ -87,6 +87,24 @@ Desarrollado y optimizado por `José Manuel Caamaño González` ([LinkedIn](http
 
 ---
 
+## 🗺️ Hoja de Ruta (Roadmap)
+
+*   **Fase 1: Conversión básica offline y aceleración CUDA** [✔️ Completado]
+    *   Integración del parser local basado en Marker.
+    *   Configuración automática de hardware para aceleración por GPU NVIDIA CUDA.
+*   **Fase 2: Interfaz acrílica y navegación nativa** [✔️ Completado]
+    *   Rediseño estilo acrílico oscuro de Windows 11.
+    *   Sistema de navegación nativo en columnas ultra rápido y adaptativo.
+*   **Fase 3: Procesamiento en lote masivo y escaneo de carpetas** [✔️ Completado]
+    *   Procesamiento múltiple y descargas agrupadas en ZIP.
+    *   Lectura y escritura local automática en directorios absolutos de Windows.
+*   **Fase 4: Exportación extendida a Excel y CSV** [⏳ Planificado]
+    *   Módulo para volcar tablas detectadas en los PDFs directamente a archivos `.xlsx` independientes.
+*   **Fase 5: Previsualización en vivo en Markdown** [⏳ Planificado]
+    *   Visor de doble panel en tiempo real para ver el resultado de la conversión antes de descargar.
+
+---
+
 ## 👨‍💻 Autor de la versión mejorada
 
 Jose Manuel Caamaño González | Arquitecto Técnico & ConTech Developer.
