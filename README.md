@@ -8,7 +8,6 @@
 <p align="center">
   <a href="https://github.com/jmcaamanog/PDF_TO_MD_BY_JMCAAMANOG/releases/latest"><img src="https://img.shields.io/github/v/release/jmcaamanog/PDF_TO_MD_BY_JMCAAMANOG?label=Version&color=3b82f6&logo=github" alt="Versión"></a>
   <a href="https://github.com/jmcaamanog/PDF_TO_MD_BY_JMCAAMANOG/stargazers"><img src="https://img.shields.io/github/stars/jmcaamanog/PDF_TO_MD_BY_JMCAAMANOG?style=flat&label=Stars&color=f59e0b&logo=github" alt="Stars"></a>
-  <a href="https://github.com/jmcaamanog/PDF_TO_MD_BY_JMCAAMANOG/releases"><img src="https://img.shields.io/github/downloads/jmcaamanog/PDF_TO_MD_BY_JMCAAMANOG/total?label=Descargas&color=10b981&logo=github" alt="Descargas"></a>
   <a href="https://github.com/jmcaamanog/PDF_TO_MD_BY_JMCAAMANOG/blob/main/LICENSE"><img src="https://img.shields.io/badge/Licencia-MIT-8b5cf6.svg" alt="Licencia"></a>
   <a href="https://jmcaamanog.pages.dev/"><img src="https://img.shields.io/badge/Plataforma-Windows%20%7C%20Local-06b6d4" alt="Plataformas"></a>
   <a href="https://www.linkedin.com/in/jmcaamanog/"><img src="https://img.shields.io/badge/Profesi%C3%B3n-Arquitectos%20T%C3%A9cnicos-2e7d32?logo=micro%3Abit&logoColor=white" alt="Profesión"></a>
@@ -22,6 +21,7 @@
 | :--- | :--- | :--- |
 | **Portafolio Web** | 👉 **[jmcaamanog.pages.dev](https://jmcaamanog.pages.dev/)** | Web profesional para explorar proyectos y contactar. |
 | **LinkedIn** | 👉 **[Perfil de LinkedIn](https://www.linkedin.com/in/jmcaamanog/)** | Red profesional para debates ConTech, BIM y automatizaciones. |
+| **Capturas de Pantalla** | 💻 **[Ver Galería de Capturas](./CAPTURAS)** | Capturas de pantalla de la interfaz de usuario en Windows. |
 
 ---
 
@@ -69,6 +69,30 @@ Desarrollado y optimizado por `José Manuel Caamaño González` ([LinkedIn](http
 *   **`requirements.txt`**: Definición de librerías esenciales y dependencias de procesamiento de IA.
 *   **`yo_animado.gif`**: Avatar animado del autor mostrado en la pestaña de información del creador.
 *   **`.streamlit/config.toml`**: Configuración de tema acrílico oscuro personalizado.
+
+---
+
+## 🏁 Primeros Pasos (Instrucciones Simplificadas)
+
+Esta sección está diseñada para ayudarte a poner en marcha la aplicación paso a paso, incluso si no tienes experiencia técnica previa.
+
+### 1. Requisitos de Partida (Hardware y Software)
+
+| Tipo | Componente / Requisito | Propósito | ¿Es obligatorio? |
+| :--- | :--- | :--- | :---: |
+| **Hardware** | Procesador Intel / AMD con 8 GB de RAM | Ejecutar la aplicación de forma estable. | Sí |
+| **Hardware** | Tarjeta Gráfica NVIDIA con soporte CUDA | Acelerar el procesamiento de los PDFs mediante IA por hardware. | Recomendado *(CPU es más lento)* |
+| **Software** | [Python 3.11 o 3.12](https://www.python.org/downloads/) | El lenguaje en el que corre la aplicación. | **Sí** *(Marcar "Add Python to PATH" al instalar)* |
+| **Software** | [Git (Instalador)](https://git-scm.com/) | Descargar y clonar las actualizaciones de la aplicación. | Opcional |
+
+### 2. Pasos a seguir en tu ordenador (Instalación)
+
+| Paso | Acción a realizar | ¿Qué hace el ordenador? |
+| :---: | :--- | :--- |
+| **1** | Descarga este proyecto pulsando en el botón verde **Code > Download ZIP** de esta web y descomprímelo en una carpeta de tu disco duro (ej: `C:\PDF_to_MD`). | Prepara los archivos de ejecución en tu máquina local. |
+| **2** | Asegúrate de tener Python instalado. Si no estás seguro, descarga el instalador de [Python 3.11 o 3.12](https://www.python.org/downloads/) y ejecútalo. **¡Importante!** Marca la casilla **"Add Python to PATH"** al principio de la instalación. | Registra Python en el sistema para poder arrancar scripts. |
+| **3** | Entra en la carpeta descomprimida y haz doble clic sobre el archivo **`setup_and_run.bat`**. | El ordenador creará un entorno virtual seguro (`.venv`), detectará tu tarjeta gráfica NVIDIA, instalará de forma automática las dependencias de IA (PyTorch) y descargará los modelos necesarios. |
+| **4** | Una vez termine (tardará unos minutos la primera vez), se abrirá tu navegador en: **`http://localhost:8501`**. | ¡Listo! Ya puedes empezar a arrastrar y convertir tus PDFs en local. |
 
 ---
 
