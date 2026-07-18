@@ -19,7 +19,7 @@
 
 | 🌟 Recurso | 🚀 Acción / Enlace | 📝 Descripción |
 | :--- | :--- | :--- |
-| **Capturas de Pantalla** | 💻 **[Ver Galería de Capturas](./CAPTURAS)** | Capturas de pantalla de la interfaz de usuario en Windows. |
+| **Capturas de Pantalla** | 💻 **[Galería Imágenes](./CAPTURAS)** | Capturas de pantalla de la interfaz de usuario en Windows. |
 
 ---
 
@@ -127,9 +127,11 @@ Esta sección está diseñada para ayudarte a poner en marcha la aplicación pas
 
 ---
 
-## 👨‍💻 Autor de la versión
+## 👨‍💻 Autor
 
-[Jose Manuel Caamaño González](https://www.linkedin.com/in/jmcaamanog/) | Arquitecto Técnico & ConTech Developer.
-Digital Product Lead | ConTech & Digital Twin SaaS | BIM, Energy Modeling & Sustainability | Data Analytics (SQL, Power BI).
+Jose Manuel Caamaño González | Arquitecto Técnico & BIM Manager.
+Digital Product Lead | ConTech & Digital Twin SaaS | BIM, Energy Modeling & Sustainability | Data Analytics (SQL, Power BI)
 
 Hecho con código y café desde A Coruña. ☕
+
+Jose Manuel Caamaño González | [LinkedIn](https://www.linkedin.com/in/jmcaamanog/)
