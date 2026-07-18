@@ -1,0 +1,95 @@
+# 📄 PDF to .MD by jmcaamanog
+
+### La herramienta libre y 100% offline para la conversión inteligente de documentos PDF a Markdown (.md).
+*Desarrollado desde la perspectiva real de un Arquitecto Técnico para dotar al sector de una utilidad ágil, segura y privada en el procesamiento de información técnica.*
+
+---
+
+<p align="center">
+  <a href="https://github.com/jmcaamanog/PDF_TO_MD_BY_JMCAAMANOG/releases/latest"><img src="https://img.shields.io/github/v/release/jmcaamanog/PDF_TO_MD_BY_JMCAAMANOG?label=Version&color=3b82f6&logo=github" alt="Versión"></a>
+  <a href="https://github.com/jmcaamanog/PDF_TO_MD_BY_JMCAAMANOG/stargazers"><img src="https://img.shields.io/github/stars/jmcaamanog/PDF_TO_MD_BY_JMCAAMANOG?style=flat&label=Stars&color=f59e0b&logo=github" alt="Stars"></a>
+  <a href="https://github.com/jmcaamanog/PDF_TO_MD_BY_JMCAAMANOG/releases"><img src="https://img.shields.io/github/downloads/jmcaamanog/PDF_TO_MD_BY_JMCAAMANOG/total?label=Descargas&color=10b981&logo=github" alt="Descargas"></a>
+  <a href="https://github.com/jmcaamanog/PDF_TO_MD_BY_JMCAAMANOG/blob/main/LICENSE"><img src="https://img.shields.io/badge/Licencia-MIT-8b5cf6.svg" alt="Licencia"></a>
+  <a href="https://jmcaamanog.pages.dev/"><img src="https://img.shields.io/badge/Plataforma-Windows%20%7C%20Local-06b6d4" alt="Plataformas"></a>
+  <a href="https://www.linkedin.com/in/jmcaamanog/"><img src="https://img.shields.io/badge/Profesi%C3%B3n-Arquitectos%20T%C3%A9cnicos-2e7d32?logo=micro%3Abit&logoColor=white" alt="Profesión"></a>
+</p>
+
+---
+
+## ⚡ Enlaces y Accesos Rápidos
+
+| 🌟 Recurso | 🚀 Acción / Enlace | 📝 Descripción |
+| :--- | :--- | :--- |
+| **Portafolio Web** | 👉 **[jmcaamanog.pages.dev](https://jmcaamanog.pages.dev/)** | Web profesional para explorar proyectos y contactar. |
+| **LinkedIn** | 👉 **[Perfil de LinkedIn](https://www.linkedin.com/in/jmcaamanog/)** | Red profesional para debates ConTech, BIM y automatizaciones. |
+
+---
+
+> [!IMPORTANT]
+> ### 📥 Lanzador de Escritorio (Listo para usar)
+> Si deseas usar la herramienta en tu ordenador en local:
+> 1. Descarga el repositorio completo en un archivo ZIP.
+> 2. Extrae el ZIP en tu disco duro (por ejemplo, en `C:\PDF_TO_MD`).
+> 3. Haz doble clic en el archivo `setup_and_run.bat` para iniciar la instalación automática y abrir la interfaz web en tu navegador local `http://localhost:8501`.
+> 
+> *El script se encarga de crear el entorno virtual, instalar PyTorch con soporte de aceleración gráfica GPU (CUDA) o CPU, y ejecutar el parser offline.*
+
+---
+
+### 👨‍💻 Creador de la Versión Premium
+Desarrollado y optimizado por `José Manuel Caamaño González` ([LinkedIn](https://www.linkedin.com/in/jmcaamanog/)), Arquitecto Técnico y BIM Manager.
+*Bajo la filosofía ConTech de construir puentes entre la construcción tradicional (AECO) y la automatización digital, esta utilidad procesa tus datos locales con máxima privacidad sin depender de APIs de terceros ni enviar información al exterior.*
+
+---
+
+## Descripción
+
+`PDF to .MD` es una aplicación de escritorio local que permite **convertir en lote archivos PDF a Markdown (.md) estructurado**. Al usar motores locales avanzados de inteligencia artificial, la app reconoce de forma autónoma capas de texto, layouts complejos de múltiples columnas, tablas numéricas detalladas y fórmulas matemáticas complejas en formato LaTeX, empaquetando todo de manera portable y segura.
+
+---
+
+## 🌟 Características Principales (PDF to .MD Premium)
+
+| Módulo | Icono | Funcionalidades Destacadas |
+| :--- | :---: | :--- |
+| **Conversión en Lote** | 📂 | Sube y procesa **múltiples PDFs simultáneamente** y descárgalos agrupados en un solo archivo comprimido `.zip` junto con todas sus imágenes extraídas. |
+| **Procesamiento de Carpeta** | 📁 | Indica una **ruta absoluta física de Windows** y la aplicación procesará, convertirá y guardará cada archivo `.md` e imágenes directamente en tu disco duro al lado del PDF original. |
+| **Extracción de Tablas** | 📊 | Conserva el formato y la alineación de **tablas complejas de presupuestos, mediciones y datos estructurados** dentro del archivo Markdown final. |
+| **Fórmulas LaTeX** | 🧮 | Conversión precisa de **fórmulas y ecuaciones matemáticas** de proyectos de edificación o ingeniería a sintaxis LaTeX integrada. |
+| **Aceleración GPU CUDA** | ⚡ | Soporte completo y diagnóstico de la tarjeta gráfica NVIDIA (por ejemplo, la RTX 4070) para **multiplicar la velocidad del proceso de IA** local por hardware. |
+| **Operación 100% Offline** | 🔌 | No requiere conexión a internet tras la instalación. Tus datos, presupuestos y planos **nunca abandonan tu máquina**. |
+| **Mantenimiento en un Clic** | 🧹 | Panel de **limpieza de caché** interactivo en castellano para liberar la memoria RAM y VRAM (memoria gráfica) de tu equipo de forma segura. |
+
+---
+
+## 📁 Estructura del Directorio
+
+*   **`app.py`**: El motor principal del backend en Python y la interfaz gráfica premium en Streamlit.
+*   **`setup_and_run.bat`**: El instalador automático y ejecutable de un solo clic para Windows.
+*   **`requirements.txt`**: Definición de librerías esenciales y dependencias de procesamiento de IA.
+*   **`yo_animado.gif`**: Avatar animado del autor mostrado en la pestaña de información del creador.
+*   **`.streamlit/config.toml`**: Configuración de tema acrílico oscuro personalizado.
+
+---
+
+## 🚀 Cómo Ejecutar e Instalar (Instrucciones)
+
+### Requisitos del Sistema
+*   Tener instalado [Python 3.11 o 3.12](https://www.python.org/downloads/) en Windows.
+*   *Recomendado:* Una tarjeta gráfica NVIDIA con soporte CUDA activo para acelerar la IA por hardware.
+
+### 💻 Lanzamiento de un Clic (setup_and_run.bat)
+1. Haz doble clic en `setup_and_run.bat`.
+2. El script detectará si posees una tarjeta gráfica NVIDIA y descargará automáticamente la versión optimizada de **PyTorch con soporte CUDA**.
+3. Creará un entorno virtual privado `.venv` para no interferir con otras aplicaciones de tu máquina.
+4. Descargará los pesos de los modelos de IA en la caché interna local `./models_cache`.
+5. Levantará el servidor en **[http://localhost:8501](http://localhost:8501)** de forma automatizada.
+
+---
+
+## 👨‍💻 Autor de la versión mejorada
+
+Jose Manuel Caamaño González | Arquitecto Técnico & ConTech Developer.
+Digital Product Lead | ConTech & Digital Twin SaaS | BIM, Energy Modeling & Sustainability | Data Analytics (SQL, Power BI).
+
+Hecho con código y café desde A Coruña. ☕

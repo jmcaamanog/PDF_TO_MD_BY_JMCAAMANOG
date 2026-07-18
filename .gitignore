@@ -1,0 +1,24 @@
+# Entorno virtual local
+.venv/
+venv/
+ENV/
+
+# Caché local de modelos de IA (pesa gigabytes y se descarga al iniciar)
+models_cache/
+
+# Caché de ejecución de Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Carpetas de configuración de IDEs
+.idea/
+.vscode/
+
+# Archivos temporales de pruebas y compilación
+*.zip
+*.log
+tmp/
+temp/
+*images/
+test.md
