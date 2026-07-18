@@ -19,8 +19,6 @@
 
 | 🌟 Recurso | 🚀 Acción / Enlace | 📝 Descripción |
 | :--- | :--- | :--- |
-| **Portafolio Web** | 👉 **[jmcaamanog.pages.dev](https://jmcaamanog.pages.dev/)** | Web profesional para explorar proyectos y contactar. |
-| **LinkedIn** | 👉 **[Perfil de LinkedIn](https://www.linkedin.com/in/jmcaamanog/)** | Red profesional para debates ConTech, BIM y automatizaciones. |
 | **Capturas de Pantalla** | 💻 **[Ver Galería de Capturas](./CAPTURAS)** | Capturas de pantalla de la interfaz de usuario en Windows. |
 
 ---
@@ -129,9 +127,9 @@ Esta sección está diseñada para ayudarte a poner en marcha la aplicación pas
 
 ---
 
-## 👨‍💻 Autor de la versión mejorada
+## 👨‍💻 Autor de la versión
 
-Jose Manuel Caamaño González | Arquitecto Técnico & ConTech Developer.
+[Jose Manuel Caamaño González](https://www.linkedin.com/in/jmcaamanog/) | Arquitecto Técnico & ConTech Developer.
 Digital Product Lead | ConTech & Digital Twin SaaS | BIM, Energy Modeling & Sustainability | Data Analytics (SQL, Power BI).
 
 Hecho con código y café desde A Coruña. ☕
