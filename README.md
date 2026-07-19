@@ -1,27 +1,13 @@
 # 📄 PDF to .MD by jmcaamanog
 
-![Profesión](https://img.shields.io/badge/Profesi%C3%B3n-Arquitectos%20T%C3%A9cnicos-2e7d32?logo=micro%3Abit&logoColor=white&style=flat-square)
-![Role](https://img.shields.io/badge/Role-BIM%20%26%20ConTech-007ACC?logo=bim360&style=flat-square)
-![Location](https://img.shields.io/badge/Location-A%20Coru%C3%B1a%20%F0%9F%8C%8A-005B94?logo=lighthouse&logoColor=white&style=flat-square)
-![Maker](https://img.shields.io/badge/Maker-Software-red?logo=makerbot&style=flat-square)
-![Hardware](https://img.shields.io/badge/Hardware---grey?style=flat-square)
-![Windows](https://img.shields.io/badge/Platform-Windows-0078D6?logo=windows&style=flat-square)
-![Language](https://img.shields.io/badge/Language-Python-3776AB?logo=python&logoColor=white&style=flat-square)
-![Stars](https://img.shields.io/github/stars/jmcaamanog/PDF_TO_MD_BY_JMCAAMANOG?style=flat-square&color=yellow&logo=github)
-![License](https://img.shields.io/github/license/jmcaamanog/PDF_TO_MD_BY_JMCAAMANOG?style=flat-square&color=green)
+| 🏗️ Perfil & ConTech | 📈 Repositorio & Enlaces |
+| :--- | :--- |
+| ![Profesión](https://img.shields.io/badge/Profesi%C3%B3n-Arquitectos%20T%C3%A9cnicos-2e7d32?logo=micro%3Abit&logoColor=white&style=plastic) <br> ![Role](https://img.shields.io/badge/Role-BIM%20%26%20ConTech-007ACC?logo=bim360&style=plastic) <br> ![Location](https://img.shields.io/badge/Location-A%20Coru%C3%B1a%20%F0%9F%8C%8A-005B94?logo=lighthouse&logoColor=white&style=plastic) <br> ![Maker](https://img.shields.io/badge/Maker-Software-red?logo=makerbot&style=plastic) <br> ![Hardware](https://img.shields.io/badge/Hardware---grey?style=plastic) <br> ![Windows](https://img.shields.io/badge/Platform-Windows-0078D6?logo=windows&style=plastic) <br> ![Language](https://img.shields.io/badge/Language-Python-3776AB?logo=python&logoColor=white&style=plastic) | ![Stars](https://img.shields.io/github/stars/jmcaamanog/PDF_TO_MD_BY_JMCAAMANOG?style=plastic&color=yellow&logo=github) <br> ![License](https://img.shields.io/github/license/jmcaamanog/PDF_TO_MD_BY_JMCAAMANOG?style=plastic&color=green) <br> [![Versión](https://img.shields.io/github/v/release/jmcaamanog/PDF_TO_MD_BY_JMCAAMANOG?label=Version&color=3b82f6&logo=github&style=plastic)](https://github.com/jmcaamanog/PDF_TO_MD_BY_JMCAAMANOG/releases/latest) <br> [![Licencia](https://img.shields.io/badge/Licencia-MIT-8b5cf6.svg?style=plastic)](https://github.com/jmcaamanog/PDF_TO_MD_BY_JMCAAMANOG/blob/main/LICENSE) <br> [![Plataformas](https://img.shields.io/badge/Plataforma-Windows%20%7C%20Local-06b6d4?style=plastic)](https://jmcaamanog.pages.dev/) |
 
 ### La herramienta libre y 100% offline para la conversión inteligente de documentos PDF a Markdown (.md).
 *Desarrollado desde la perspectiva real de un Arquitecto Técnico para dotar al sector de una utilidad ágil, segura y privada en el procesamiento de información técnica.*
 
 ---
-
-<p align="center">
-  <a href="https://github.com/jmcaamanog/PDF_TO_MD_BY_JMCAAMANOG/releases/latest"><img src="https://img.shields.io/github/v/release/jmcaamanog/PDF_TO_MD_BY_JMCAAMANOG?label=Version&color=3b82f6&logo=github" alt="Versión"></a>
-  <a href="https://github.com/jmcaamanog/PDF_TO_MD_BY_JMCAAMANOG/stargazers"><img src="https://img.shields.io/github/stars/jmcaamanog/PDF_TO_MD_BY_JMCAAMANOG?style=flat&label=Stars&color=f59e0b&logo=github" alt="Stars"></a>
-  <a href="https://github.com/jmcaamanog/PDF_TO_MD_BY_JMCAAMANOG/blob/main/LICENSE"><img src="https://img.shields.io/badge/Licencia-MIT-8b5cf6.svg" alt="Licencia"></a>
-  <a href="https://jmcaamanog.pages.dev/"><img src="https://img.shields.io/badge/Plataforma-Windows%20%7C%20Local-06b6d4" alt="Plataformas"></a>
-  <a href="https://www.linkedin.com/in/jmcaamanog/"><img src="https://img.shields.io/badge/Profesi%C3%B3n-Arquitectos%20T%C3%A9cnicos-2e7d32?logo=micro%3Abit&logoColor=white" alt="Profesión"></a>
-</p>
 
 ---
 
@@ -41,8 +27,6 @@
 > 3. Haz doble clic en el archivo `setup_and_run.bat` para iniciar la instalación automática y abrir la interfaz web en tu navegador local `http://localhost:8501`.
 > 
 > *El script se encarga de crear el entorno virtual, instalar PyTorch con soporte de aceleración gráfica GPU (CUDA) o CPU, y ejecutar el parser offline.*
-
-
 
 ## Descripción
 
@@ -127,9 +111,8 @@ Esta sección está diseñada para ayudarte a poner en marcha la aplicación pas
 
 ## 👨‍💻 Autor
 
-Jose Manuel Caamaño González | Arquitecto Técnico & BIM Manager.
-Digital Product Lead | ConTech & Digital Twin SaaS | BIM, Energy Modeling & Sustainability | Data Analytics (SQL, Power BI)
+**Jose Manuel Caamaño González** | Arquitecto Técnico & BIM Manager
+Digital Product Lead | ConTech & Digital Twin SaaS | Data Analytics (SQL, Power BI)
 
 Hecho con código y café desde A Coruña. ☕
-
-Jose Manuel Caamaño González | [LinkedIn](https://www.linkedin.com/in/jmcaamanog/)
+[LinkedIn](https://www.linkedin.com/in/jmcaamanog/) · [Web](https://jmcaamanog.pages.dev)
