@@ -8,16 +8,9 @@ import base64
 import re
 import difflib
 import urllib.parse
+import subprocess
 import torch
 import streamlit as st
-
-# Tkinter para cuadro de diálogo nativo del Explorador de Windows
-try:
-    import tkinter as tk
-    from tkinter import filedialog
-    TKINTER_AVAILABLE = True
-except ImportError:
-    TKINTER_AVAILABLE = False
 
 # Importaciones condicionales para scraping web, excel y dataframes
 try:
@@ -63,15 +56,35 @@ if "default_lang" not in st.session_state:
     st.session_state.default_lang = "es"
 if "last_results" not in st.session_state:
     st.session_state.last_results = []
+if "switch_to_convert" not in st.session_state:
+    st.session_state.switch_to_convert = False
 
-# Función para abrir explorador nativo de Windows
+# Función robusta para abrir explorador nativo de Windows (PowerShell FolderBrowserDialog)
 def select_folder_dialog(title="Seleccionar Carpeta"):
-    if not TKINTER_AVAILABLE:
-        return ""
     try:
+        ps_script = f'''
+        Add-Type -AssemblyName System.Windows.Forms
+        $f = New-Object System.Windows.Forms.FolderBrowserDialog
+        $f.Description = "{title}"
+        $f.ShowNewFolderButton = $true
+        if ($f.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK) {{
+            Write-Output $f.SelectedPath
+        }}
+        '''
+        res = subprocess.run(["powershell", "-NoProfile", "-Command", ps_script], capture_output=True, text=True, timeout=60)
+        folder = res.stdout.strip()
+        if folder and os.path.isdir(folder):
+            return folder
+    except Exception:
+        pass
+
+    try:
+        import tkinter as tk
+        from tkinter import filedialog
         root = tk.Tk()
         root.withdraw()
-        root.wm_attributes('-topmost', 1)
+        root.attributes('-topmost', True)
+        root.update()
         folder = filedialog.askdirectory(title=title, master=root)
         root.destroy()
         return folder
@@ -174,28 +187,32 @@ st.markdown("""
         box-shadow: 0 6px 20px rgba(0, 198, 255, 0.4) !important;
     }
 
-    /* BOTONES PRIMARIOS Y SECUNDARIOS SIN MOVERSE */
-    .stButton>button {
-        background: rgba(255, 255, 255, 0.05);
-        color: #9ca3af;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        padding: 14px 24px;
-        font-family: 'Outfit', sans-serif;
-        font-size: 14px;
-        font-weight: 700;
-        border-radius: 10px;
-        width: 100%;
-        text-transform: uppercase;
-        transform: none !important;
-        transition: background 0.2s ease !important;
-    }
-    
-    .btn-active>button {
+    /* ESTILO DE BOTONES SELECCIONADOS (PRIMARY) VS INACTIVOS (SECONDARY) */
+    button[kind="primary"], div[data-testid="stButton"] > button[kind="primary"] {
         background: linear-gradient(135deg, #00c6ff, #0072ff) !important;
         color: #ffffff !important;
         border: none !important;
         box-shadow: 0 4px 15px rgba(0, 198, 255, 0.4) !important;
+        font-family: 'Outfit', sans-serif !important;
+        font-size: 14px !important;
+        font-weight: 700 !important;
+        border-radius: 10px !important;
+        text-transform: uppercase !important;
         transform: none !important;
+        height: 48px !important;
+    }
+    
+    button[kind="secondary"], div[data-testid="stButton"] > button[kind="secondary"] {
+        background: rgba(255, 255, 255, 0.05) !important;
+        color: #9ca3af !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        font-family: 'Outfit', sans-serif !important;
+        font-size: 14px !important;
+        font-weight: 600 !important;
+        border-radius: 10px !important;
+        text-transform: uppercase !important;
+        transform: none !important;
+        height: 48px !important;
     }
 
     /* TARJETA CON BORDE IZQUIERDO AZUL REPLICADA DE IMAGEN 001 */
@@ -243,26 +260,6 @@ st.markdown("""
         padding: 4px 10px;
         border-radius: 6px;
         font-size: 13px;
-    }
-
-    .metric-card {
-        background: rgba(15, 23, 42, 0.6);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 10px;
-        padding: 16px;
-        text-align: center;
-    }
-    .metric-value {
-        font-family: 'Outfit', sans-serif;
-        font-size: 26px;
-        font-weight: 700;
-        color: #38bdf8;
-    }
-    .metric-label {
-        font-size: 12px;
-        color: #9ca3af;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -378,6 +375,18 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
+# JavaScript para conmutar directamente a la pestaña CONVERTIR cuando se solicite
+if st.session_state.switch_to_convert:
+    st.session_state.switch_to_convert = False
+    st.components.v1.html("""
+    <script>
+        var tabs = window.parent.document.querySelectorAll('button[data-baseweb="tab"]');
+        if (tabs.length > 1) {
+            tabs[1].click();
+        }
+    </script>
+    """, height=0)
+
 # ----------------- 5 PESTAÑAS (INTRO, CONVERTIR, ASISTENTE IA, REQUISITOS, AUTOR) -----------------
 tab_home, tab_conv, tab_assistant, tab_settings, tab_author = st.tabs([
     "INTRO",
@@ -415,12 +424,10 @@ with tab_home:
     </div>
     """, unsafe_allow_html=True)
 
-    col_c_btn1, col_c_btn2, col_c_btn3 = st.columns([1, 2, 1])
-    with col_c_btn2:
-        st.markdown("<div class='btn-active'>", unsafe_allow_html=True)
-        if st.button("🚀 CONVERTIR", key="btn_inicio_to_convert_v3"):
-            st.info("💡 Haz clic en la pestaña **CONVERTIR** arriba para iniciar.")
-        st.markdown("</div>", unsafe_allow_html=True)
+    # BOTÓN CONVERTIR QUE NAVEGA DIRECTAMENTE Y OCUPA EL 100% DEL ANCHO SEGÚN MARCO ROJO DE IMAGEN 1
+    if st.button("🚀 CONVERTIR", key="btn_inicio_to_convert_v5", type="primary", use_container_width=True):
+        st.session_state.switch_to_convert = True
+        st.rerun()
 
 # ================= 2. PESTAÑA CONVERTIR =================
 with tab_conv:
@@ -431,30 +438,27 @@ with tab_conv:
 
         col_src1, col_src2, col_src3 = st.columns(3)
         with col_src1:
-            if st.session_state.src_choice == "PDF": st.markdown("<div class='btn-active'>", unsafe_allow_html=True)
-            if st.button("📁 PDF ARCHIVO", key="btn_src_pdf_v4"):
+            pdf_type = "primary" if st.session_state.src_choice == "PDF" else "secondary"
+            if st.button("📁 PDF ARCHIVO", key="btn_src_pdf_v5", type=pdf_type, use_container_width=True):
                 st.session_state.src_choice = "PDF"
                 st.rerun()
-            if st.session_state.src_choice == "PDF": st.markdown("</div>", unsafe_allow_html=True)
 
         with col_src2:
-            is_folder_active = (st.session_state.src_choice == "CARPETA" or bool(st.session_state.source_folder_path))
-            if is_folder_active: st.markdown("<div class='btn-active'>", unsafe_allow_html=True)
-            folder_btn_label = "📂 CARPETA" if not st.session_state.source_folder_path else f"✔️ CARPETA ({os.path.basename(st.session_state.source_folder_path)})"
-            if st.button(folder_btn_label, key="btn_src_folder_v4"):
+            is_folder_selected = bool(st.session_state.source_folder_path)
+            folder_type = "primary" if (st.session_state.src_choice == "CARPETA" or is_folder_selected) else "secondary"
+            folder_label = "📂 CARPETA" if not is_folder_selected else f"✔️ CARPETA ({os.path.basename(st.session_state.source_folder_path)})"
+            if st.button(folder_label, key="btn_src_folder_v5", type=folder_type, use_container_width=True):
                 st.session_state.src_choice = "CARPETA"
                 chosen_f = select_folder_dialog("Seleccionar Carpeta de Origen con PDFs")
                 if chosen_f:
                     st.session_state.source_folder_path = chosen_f
                 st.rerun()
-            if is_folder_active: st.markdown("</div>", unsafe_allow_html=True)
 
         with col_src3:
-            if st.session_state.src_choice == "WEB": st.markdown("<div class='btn-active'>", unsafe_allow_html=True)
-            if st.button("🌐 PÁGINA WEB", key="btn_src_web_v4"):
+            web_type = "primary" if st.session_state.src_choice == "WEB" else "secondary"
+            if st.button("🌐 PÁGINA WEB", key="btn_src_web_v5", type=web_type, use_container_width=True):
                 st.session_state.src_choice = "WEB"
                 st.rerun()
-            if st.session_state.src_choice == "WEB": st.markdown("</div>", unsafe_allow_html=True)
 
         files_to_process = []
         web_url_target = None
@@ -489,32 +493,28 @@ with tab_conv:
 
         col_ext1, col_ext2, col_ext3, col_ext4 = st.columns(4)
         with col_ext1:
-            if st.session_state.ext_choice == "RÁPIDO": st.markdown("<div class='btn-active'>", unsafe_allow_html=True)
-            if st.button("⚡ RÁPIDO", key="btn_ext_rapido_v4"):
+            t_rap = "primary" if st.session_state.ext_choice == "RÁPIDO" else "secondary"
+            if st.button("⚡ RÁPIDO", key="btn_ext_rapido_v5", type=t_rap, use_container_width=True):
                 st.session_state.ext_choice = "RÁPIDO"
                 st.rerun()
-            if st.session_state.ext_choice == "RÁPIDO": st.markdown("</div>", unsafe_allow_html=True)
 
         with col_ext2:
-            if st.session_state.ext_choice == "GRÁFICO": st.markdown("<div class='btn-active'>", unsafe_allow_html=True)
-            if st.button("🖼️ GRÁFICO", key="btn_ext_grafico_v4"):
+            t_graf = "primary" if st.session_state.ext_choice == "GRÁFICO" else "secondary"
+            if st.button("🖼️ GRÁFICO", key="btn_ext_grafico_v5", type=t_graf, use_container_width=True):
                 st.session_state.ext_choice = "GRÁFICO"
                 st.rerun()
-            if st.session_state.ext_choice == "GRÁFICO": st.markdown("</div>", unsafe_allow_html=True)
 
         with col_ext3:
-            if st.session_state.ext_choice == "TÉCNICO": st.markdown("<div class='btn-active'>", unsafe_allow_html=True)
-            if st.button("🏗️ TÉCNICO", key="btn_ext_tecnico_v4"):
+            t_tec = "primary" if st.session_state.ext_choice == "TÉCNICO" else "secondary"
+            if st.button("🏗️ TÉCNICO", key="btn_ext_tecnico_v5", type=t_tec, use_container_width=True):
                 st.session_state.ext_choice = "TÉCNICO"
                 st.rerun()
-            if st.session_state.ext_choice == "TÉCNICO": st.markdown("</div>", unsafe_allow_html=True)
 
         with col_ext4:
-            if st.session_state.ext_choice == "COMPLETO": st.markdown("<div class='btn-active'>", unsafe_allow_html=True)
-            if st.button("🧮 COMPLETO", key="btn_ext_completo_v4"):
+            t_comp = "primary" if st.session_state.ext_choice == "COMPLETO" else "secondary"
+            if st.button("🧮 COMPLETO", key="btn_ext_completo_v5", type=t_comp, use_container_width=True):
                 st.session_state.ext_choice = "COMPLETO"
                 st.rerun()
-            if st.session_state.ext_choice == "COMPLETO": st.markdown("</div>", unsafe_allow_html=True)
 
         disable_img_ext = False
         force_ocr_flag = False
@@ -539,17 +539,15 @@ with tab_conv:
         st.markdown("<h4 class='container-title'>EXPORTACIÓN Y PROCESAMIENTO</h4>", unsafe_allow_html=True)
 
         is_dest_active = bool(st.session_state.dest_folder_path)
-        dest_btn_label = "📂 CARPETA DESTINO" if not st.session_state.dest_folder_path else f"✔️ CARPETA DESTINO ({os.path.basename(st.session_state.dest_folder_path)})"
+        dest_btn_type = "primary" if is_dest_active else "secondary"
+        dest_btn_label = "📂 CARPETA DESTINO" if not is_dest_active else f"✔️ CARPETA DESTINO ({os.path.basename(st.session_state.dest_folder_path)})"
 
-        col_dst1, col_dst2, col_dst3 = st.columns([1, 2, 1])
-        with col_dst2:
-            if is_dest_active: st.markdown("<div class='btn-active'>", unsafe_allow_html=True)
-            if st.button(dest_btn_label, key="btn_browse_dest_folder_v4"):
-                chosen_dest = select_folder_dialog("Seleccionar Carpeta de Destino para Guardar")
-                if chosen_dest:
-                    st.session_state.dest_folder_path = chosen_dest
-                    st.rerun()
-            if is_dest_active: st.markdown("</div>", unsafe_allow_html=True)
+        # BOTÓN CARPETA DESTINO OCUPANDO EL 100% DEL ANCHO SEGÚN MARCO ROJO DE IMAGEN 2
+        if st.button(dest_btn_label, key="btn_browse_dest_folder_v5", type=dest_btn_type, use_container_width=True):
+            chosen_dest = select_folder_dialog("Seleccionar Carpeta de Destino para Guardar")
+            if chosen_dest:
+                st.session_state.dest_folder_path = chosen_dest
+                st.rerun()
 
         if is_dest_active:
             st.success(f"📂 Carpeta de Destino seleccionada: `{st.session_state.dest_folder_path}`")
@@ -626,11 +624,8 @@ with tab_conv:
             st.warning("⚠️ Pulsa el botón **📂 CARPETA DESTINO** para indicar en qué carpeta de tu ordenador se guardarán los resultados.")
 
         st.write("")
-        col_run1, col_run2, col_run3 = st.columns([1, 2, 1])
-        with col_run2:
-            st.markdown("<div class='btn-active'>", unsafe_allow_html=True)
-            btn_go = st.button("🚀 EXPORTAR Y PROCESAR DOCUMENTOS", key="btn_run_export_final_v4", disabled=not (has_valid_source and has_valid_destination))
-            st.markdown("</div>", unsafe_allow_html=True)
+        # BOTÓN PROCESAR OCUPANDO EL 100% DEL ANCHO SEGÚN MARCO ROJO DE IMAGEN 2
+        btn_go = st.button("🚀 EXPORTAR Y PROCESAR DOCUMENTOS", key="btn_run_export_final_v5", type="primary", disabled=not (has_valid_source and has_valid_destination), use_container_width=True)
 
         if btn_go:
             progress_bar = st.progress(0)
@@ -814,10 +809,8 @@ with tab_settings:
     # 2. DIAGNÓSTICO DEL SISTEMA (BOTÓN CENTRADO ÚNICAMENTE)
     col_d_center1, col_d_center2, col_d_center3 = st.columns([1, 2, 1])
     with col_d_center2:
-        st.markdown("<div class='btn-active'>", unsafe_allow_html=True)
-        if st.button("🔍 CHEQUEAR REQUISITOS DEL SISTEMA", key="btn_check_reqs_v4"):
+        if st.button("🔍 CHEQUEAR REQUISITOS DEL SISTEMA", key="btn_check_reqs_v5", type="primary", use_container_width=True):
             st.success(f"✔️ Sistema verificado: Python {sys.version.split()[0]} | CUDA GPU: {gpu_name}")
-        st.markdown("</div>", unsafe_allow_html=True)
 
     st.write("")
     st.divider()
@@ -909,7 +902,7 @@ with tab_author:
           </a>
           <a href="https://www.linkedin.com/in/jmcaamanog/" target="_blank" style="text-decoration: none; display: inline-flex; align-items: center; gap: 10px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 10px 20px; color: #ffffff; font-family: 'Outfit', sans-serif; font-weight: 600; font-size: 14px; transition: all 0.3s ease;">
             <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24" style="vertical-align: middle;">
-              <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.779-1.75-1.75s.784-1.75 1.75-1.75 1.75.779 1.75 1.75-.784 1.75-1.75-1.75zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+              <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.779-1.75-1.75s.784-1.75 1.75-1.75 1.75.779 1.75 1.75-.784 1.75-1.75 1.75zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
             </svg>
             <span>LinkedIn</span>
           </a>
