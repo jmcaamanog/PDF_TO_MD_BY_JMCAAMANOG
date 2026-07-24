@@ -1,2 +1,5 @@
 streamlit
 marker-pdf
+beautifulsoup4
+html2text
+requests
