@@ -59,24 +59,22 @@ if "last_results" not in st.session_state:
 if "switch_to_convert" not in st.session_state:
     st.session_state.switch_to_convert = False
 
-# Función robusta para abrir explorador nativo de Windows (PowerShell FolderBrowserDialog)
+# Función robusta para abrir explorador nativo de Windows TRAÍDO AL PRIMER PLANO (TopMost)
 def select_folder_dialog(title="Seleccionar Carpeta"):
-    try:
-        ps_script = f'''
-        Add-Type -AssemblyName System.Windows.Forms
-        $f = New-Object System.Windows.Forms.FolderBrowserDialog
-        $f.Description = "{title}"
-        $f.ShowNewFolderButton = $true
-        if ($f.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK) {{
-            Write-Output $f.SelectedPath
-        }}
-        '''
-        res = subprocess.run(["powershell", "-NoProfile", "-Command", ps_script], capture_output=True, text=True, timeout=60)
-        folder = res.stdout.strip()
-        if folder and os.path.isdir(folder):
-            return folder
-    except Exception:
-        pass
+    ps_file = os.path.join(CURRENT_DIR, "select_folder.ps1")
+    if os.path.exists(ps_file):
+        try:
+            res = subprocess.run(
+                ["powershell", "-ExecutionPolicy", "Bypass", "-File", ps_file],
+                capture_output=True,
+                text=True,
+                timeout=35
+            )
+            folder = res.stdout.strip()
+            if folder and os.path.isdir(folder):
+                return folder
+        except Exception:
+            pass
 
     try:
         import tkinter as tk
@@ -84,7 +82,8 @@ def select_folder_dialog(title="Seleccionar Carpeta"):
         root = tk.Tk()
         root.withdraw()
         root.attributes('-topmost', True)
-        root.update()
+        root.lift()
+        root.focus_force()
         folder = filedialog.askdirectory(title=title, master=root)
         root.destroy()
         return folder
@@ -425,7 +424,7 @@ with tab_home:
     """, unsafe_allow_html=True)
 
     # BOTÓN CONVERTIR QUE NAVEGA DIRECTAMENTE Y OCUPA EL 100% DEL ANCHO SEGÚN MARCO ROJO DE IMAGEN 1
-    if st.button("🚀 CONVERTIR", key="btn_inicio_to_convert_v5", type="primary", use_container_width=True):
+    if st.button("🚀 CONVERTIR", key="btn_inicio_to_convert_v6", type="primary", use_container_width=True):
         st.session_state.switch_to_convert = True
         st.rerun()
 
@@ -439,7 +438,7 @@ with tab_conv:
         col_src1, col_src2, col_src3 = st.columns(3)
         with col_src1:
             pdf_type = "primary" if st.session_state.src_choice == "PDF" else "secondary"
-            if st.button("📁 PDF ARCHIVO", key="btn_src_pdf_v5", type=pdf_type, use_container_width=True):
+            if st.button("📁 PDF ARCHIVO", key="btn_src_pdf_v6", type=pdf_type, use_container_width=True):
                 st.session_state.src_choice = "PDF"
                 st.rerun()
 
@@ -447,7 +446,7 @@ with tab_conv:
             is_folder_selected = bool(st.session_state.source_folder_path)
             folder_type = "primary" if (st.session_state.src_choice == "CARPETA" or is_folder_selected) else "secondary"
             folder_label = "📂 CARPETA" if not is_folder_selected else f"✔️ CARPETA ({os.path.basename(st.session_state.source_folder_path)})"
-            if st.button(folder_label, key="btn_src_folder_v5", type=folder_type, use_container_width=True):
+            if st.button(folder_label, key="btn_src_folder_v6", type=folder_type, use_container_width=True):
                 st.session_state.src_choice = "CARPETA"
                 chosen_f = select_folder_dialog("Seleccionar Carpeta de Origen con PDFs")
                 if chosen_f:
@@ -456,7 +455,7 @@ with tab_conv:
 
         with col_src3:
             web_type = "primary" if st.session_state.src_choice == "WEB" else "secondary"
-            if st.button("🌐 PÁGINA WEB", key="btn_src_web_v5", type=web_type, use_container_width=True):
+            if st.button("🌐 PÁGINA WEB", key="btn_src_web_v6", type=web_type, use_container_width=True):
                 st.session_state.src_choice = "WEB"
                 st.rerun()
 
@@ -474,6 +473,12 @@ with tab_conv:
             page_range_filter = parse_page_range(page_range_str)
 
         elif st.session_state.src_choice == "CARPETA":
+            # Si ya hay carpeta o el usuario prefiere ajustar la ruta directamente:
+            src_path_input = st.text_input("Ruta de la carpeta de Origen en tu ordenador:", value=st.session_state.source_folder_path, placeholder="Ejemplo: C:\\Proyectos\\PDFs")
+            if src_path_input != st.session_state.source_folder_path:
+                st.session_state.source_folder_path = src_path_input
+                st.rerun()
+
             if st.session_state.source_folder_path and os.path.isdir(st.session_state.source_folder_path):
                 pdf_files = [f for f in os.listdir(st.session_state.source_folder_path) if f.lower().endswith(".pdf")]
                 if pdf_files:
@@ -494,25 +499,25 @@ with tab_conv:
         col_ext1, col_ext2, col_ext3, col_ext4 = st.columns(4)
         with col_ext1:
             t_rap = "primary" if st.session_state.ext_choice == "RÁPIDO" else "secondary"
-            if st.button("⚡ RÁPIDO", key="btn_ext_rapido_v5", type=t_rap, use_container_width=True):
+            if st.button("⚡ RÁPIDO", key="btn_ext_rapido_v6", type=t_rap, use_container_width=True):
                 st.session_state.ext_choice = "RÁPIDO"
                 st.rerun()
 
         with col_ext2:
             t_graf = "primary" if st.session_state.ext_choice == "GRÁFICO" else "secondary"
-            if st.button("🖼️ GRÁFICO", key="btn_ext_grafico_v5", type=t_graf, use_container_width=True):
+            if st.button("🖼️ GRÁFICO", key="btn_ext_grafico_v6", type=t_graf, use_container_width=True):
                 st.session_state.ext_choice = "GRÁFICO"
                 st.rerun()
 
         with col_ext3:
             t_tec = "primary" if st.session_state.ext_choice == "TÉCNICO" else "secondary"
-            if st.button("🏗️ TÉCNICO", key="btn_ext_tecnico_v5", type=t_tec, use_container_width=True):
+            if st.button("🏗️ TÉCNICO", key="btn_ext_tecnico_v6", type=t_tec, use_container_width=True):
                 st.session_state.ext_choice = "TÉCNICO"
                 st.rerun()
 
         with col_ext4:
             t_comp = "primary" if st.session_state.ext_choice == "COMPLETO" else "secondary"
-            if st.button("🧮 COMPLETO", key="btn_ext_completo_v5", type=t_comp, use_container_width=True):
+            if st.button("🧮 COMPLETO", key="btn_ext_completo_v6", type=t_comp, use_container_width=True):
                 st.session_state.ext_choice = "COMPLETO"
                 st.rerun()
 
@@ -542,15 +547,21 @@ with tab_conv:
         dest_btn_type = "primary" if is_dest_active else "secondary"
         dest_btn_label = "📂 CARPETA DESTINO" if not is_dest_active else f"✔️ CARPETA DESTINO ({os.path.basename(st.session_state.dest_folder_path)})"
 
-        # BOTÓN CARPETA DESTINO OCUPANDO EL 100% DEL ANCHO SEGÚN MARCO ROJO DE IMAGEN 2
-        if st.button(dest_btn_label, key="btn_browse_dest_folder_v5", type=dest_btn_type, use_container_width=True):
+        # BOTÓN CARPETA DESTINO OCUPANDO EL 100% DEL ANCHO
+        if st.button(dest_btn_label, key="btn_browse_dest_folder_v6", type=dest_btn_type, use_container_width=True):
             chosen_dest = select_folder_dialog("Seleccionar Carpeta de Destino para Guardar")
             if chosen_dest:
                 st.session_state.dest_folder_path = chosen_dest
                 st.rerun()
 
-        if is_dest_active:
-            st.success(f"📂 Carpeta de Destino seleccionada: `{st.session_state.dest_folder_path}`")
+        # CAMPO DE RUTA DESTINO EDITABLE DIRECTAMENTE
+        dest_path_input = st.text_input("Ruta de la carpeta de Destino en tu ordenador:", value=st.session_state.dest_folder_path, placeholder="Ejemplo: C:\\Proyectos\\Resultados_MD")
+        if dest_path_input != st.session_state.dest_folder_path:
+            st.session_state.dest_folder_path = dest_path_input
+            st.rerun()
+
+        if is_dest_active and os.path.exists(st.session_state.dest_folder_path):
+            st.success(f"📂 Carpeta de Destino válida: `{st.session_state.dest_folder_path}`")
 
         def convert_url_to_md(url, extract_images=True):
             if not WEB_EXTRACTOR_AVAILABLE:
@@ -621,11 +632,11 @@ with tab_conv:
         has_valid_destination = st.session_state.dest_folder_path and os.path.exists(st.session_state.dest_folder_path)
 
         if not has_valid_destination and has_valid_source:
-            st.warning("⚠️ Pulsa el botón **📂 CARPETA DESTINO** para indicar en qué carpeta de tu ordenador se guardarán los resultados.")
+            st.warning("⚠️ Selecciona o escribe una **Carpeta de Destino** válida para habilitar el botón de exportación.")
 
         st.write("")
-        # BOTÓN PROCESAR OCUPANDO EL 100% DEL ANCHO SEGÚN MARCO ROJO DE IMAGEN 2
-        btn_go = st.button("🚀 EXPORTAR Y PROCESAR DOCUMENTOS", key="btn_run_export_final_v5", type="primary", disabled=not (has_valid_source and has_valid_destination), use_container_width=True)
+        # BOTÓN PROCESAR OCUPANDO EL 100% DEL ANCHO
+        btn_go = st.button("🚀 EXPORTAR Y PROCESAR DOCUMENTOS", key="btn_run_export_final_v6", type="primary", disabled=not (has_valid_source and has_valid_destination), use_container_width=True)
 
         if btn_go:
             progress_bar = st.progress(0)
@@ -809,7 +820,7 @@ with tab_settings:
     # 2. DIAGNÓSTICO DEL SISTEMA (BOTÓN CENTRADO ÚNICAMENTE)
     col_d_center1, col_d_center2, col_d_center3 = st.columns([1, 2, 1])
     with col_d_center2:
-        if st.button("🔍 CHEQUEAR REQUISITOS DEL SISTEMA", key="btn_check_reqs_v5", type="primary", use_container_width=True):
+        if st.button("🔍 CHEQUEAR REQUISITOS DEL SISTEMA", key="btn_check_reqs_v6", type="primary", use_container_width=True):
             st.success(f"✔️ Sistema verificado: Python {sys.version.split()[0]} | CUDA GPU: {gpu_name}")
 
     st.write("")
@@ -902,7 +913,7 @@ with tab_author:
           </a>
           <a href="https://www.linkedin.com/in/jmcaamanog/" target="_blank" style="text-decoration: none; display: inline-flex; align-items: center; gap: 10px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 10px 20px; color: #ffffff; font-family: 'Outfit', sans-serif; font-weight: 600; font-size: 14px; transition: all 0.3s ease;">
             <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24" style="vertical-align: middle;">
-              <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.779-1.75-1.75s.784-1.75 1.75-1.75 1.75.779 1.75 1.75-.784 1.75-1.75 1.75zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+              <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.779-1.75-1.75s.784-1.75 1.75-1.75 1.75.779 1.75 1.75-.784 1.75-1.75-1.75zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
             </svg>
             <span>LinkedIn</span>
           </a>
