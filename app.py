@@ -61,6 +61,72 @@ if "last_results" not in st.session_state:
 if "switch_to_convert" not in st.session_state:
     st.session_state.switch_to_convert = False
 
+# ----------------- FUNCIONES GLOBALES DE CONVERSIÓN EN TOP-LEVEL SCOPE -----------------
+@st.cache_resource
+def get_converter(disable_img_ext, lang, force_ocr):
+    from marker.models import create_model_dict
+    from marker.converters.pdf import PdfConverter
+    from marker.config.parser import ConfigParser
+
+    config_dict = {
+        "output_format": "markdown",
+        "disable_image_extraction": disable_img_ext,
+        "force_ocr": force_ocr
+    }
+    if lang: config_dict["languages"] = lang
+
+    config_parser = ConfigParser(config_dict)
+    artifact_dict = create_model_dict()
+    return PdfConverter(
+        config=config_parser.generate_config_dict(),
+        artifact_dict=artifact_dict,
+        processor_list=config_parser.get_processors(),
+        renderer=config_parser.get_renderer()
+    )
+
+def convert_url_to_md(url, extract_images=True):
+    if not WEB_EXTRACTOR_AVAILABLE:
+        import urllib.request
+        req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+        with urllib.request.urlopen(req) as response:
+            html_content = response.read().decode('utf-8', errors='ignore')
+        title_match = re.search(r'<title>(.*?)</title>', html_content, re.IGNORECASE)
+        title = title_match.group(1) if title_match else "Pagina_Web"
+        text = re.sub(r'<.*?>', '', html_content)
+        return title, text.strip(), {}
+
+    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'}
+    resp = requests.get(url, headers=headers, timeout=15)
+    soup = BeautifulSoup(resp.text, 'html.parser')
+    page_title = soup.title.string.strip() if soup.title and soup.title.string else "Pagina_Web"
+    
+    for element in soup(["script", "style", "nav", "footer", "iframe", "noscript"]):
+        element.extract()
+
+    h2t = html2text.HTML2Text()
+    h2t.ignore_links = False
+    h2t.ignore_images = not extract_images
+    h2t.ignore_tables = False
+    markdown_body = h2t.handle(str(soup))
+    
+    extracted_images = {}
+    if extract_images:
+        img_tags = soup.find_all('img')
+        for i, img in enumerate(img_tags[:10]):
+            src = img.get('src')
+            if src:
+                full_img_url = urllib.parse.urljoin(url, src)
+                try:
+                    img_resp = requests.get(full_img_url, headers=headers, timeout=5)
+                    if img_resp.status_code == 200:
+                        from PIL import Image
+                        pil_img = Image.open(io.BytesIO(img_resp.content))
+                        extracted_images[f"image_{i+1}.png"] = pil_img
+                except Exception:
+                    pass
+                    
+    return page_title, markdown_body, extracted_images
+
 # Estilos CSS de Alta Calidad (+25% Más Ancho, Pestañas 100% Ancho y Botones Activos Azul Claro)
 st.markdown("""
 <style>
@@ -395,7 +461,7 @@ with tab_home:
     """, unsafe_allow_html=True)
 
     # BOTÓN CONVERTIR QUE NAVEGA DIRECTAMENTE Y OCUPA EL 100% DEL ANCHO
-    if st.button("🚀 CONVERTIR", key="btn_inicio_to_convert_v10", type="primary", use_container_width=True):
+    if st.button("🚀 CONVERTIR", key="btn_inicio_to_convert_v11", type="primary", use_container_width=True):
         st.session_state.switch_to_convert = True
         st.rerun()
 
@@ -409,19 +475,19 @@ with tab_conv:
         col_src1, col_src2, col_src3 = st.columns(3)
         with col_src1:
             pdf_type = "primary" if st.session_state.src_choice == "PDF" else "secondary"
-            if st.button("📁 PDF ARCHIVO", key="btn_src_pdf_v10", type=pdf_type, use_container_width=True):
+            if st.button("📁 PDF ARCHIVO", key="btn_src_pdf_v11", type=pdf_type, use_container_width=True):
                 st.session_state.src_choice = "PDF"
                 st.rerun()
 
         with col_src2:
             folder_type = "primary" if st.session_state.src_choice == "CARPETA" else "secondary"
-            if st.button("📂 CARPETA", key="btn_src_folder_v10", type=folder_type, use_container_width=True):
+            if st.button("📂 CARPETA", key="btn_src_folder_v11", type=folder_type, use_container_width=True):
                 st.session_state.src_choice = "CARPETA"
                 st.rerun()
 
         with col_src3:
             web_type = "primary" if st.session_state.src_choice == "WEB" else "secondary"
-            if st.button("🌐 PÁGINA WEB", key="btn_src_web_v10", type=web_type, use_container_width=True):
+            if st.button("🌐 PÁGINA WEB", key="btn_src_web_v11", type=web_type, use_container_width=True):
                 st.session_state.src_choice = "WEB"
                 st.rerun()
 
@@ -440,7 +506,7 @@ with tab_conv:
             page_range_filter = parse_page_range(page_range_str)
 
         elif st.session_state.src_choice == "CARPETA":
-            # CARPETA: IDÉNTICO A PÁGINA WEB, UN SOLO RECUADRO LIMPIO PARA PONER LA RUTA DE LA CARPETA
+            # CARPETA: IDÉNTICO A PÁGINA WEB, UN SOLO RECUADRO LIMPIO PARA PONER LA RUTA DE LA CARPETA (SIN FILTRO DE PÁGINAS)
             src_path_input = st.text_input(
                 label="",
                 value=st.session_state.source_folder_path,
@@ -463,9 +529,6 @@ with tab_conv:
             elif st.session_state.source_folder_path:
                 st.error("⚠️ La ruta de carpeta indicada no existe en el ordenador.")
 
-            page_range_str = st.text_input("🔍 Convertir solo páginas específicas (Opcional):", placeholder="Ejemplo: 1-5, 10")
-            page_range_filter = parse_page_range(page_range_str)
-
         elif st.session_state.src_choice == "WEB":
             web_url_target = st.text_input(label="", placeholder="https://ejemplo.com/articulo-tecnico", label_visibility="collapsed")
 
@@ -476,25 +539,25 @@ with tab_conv:
         col_ext1, col_ext2, col_ext3, col_ext4 = st.columns(4)
         with col_ext1:
             t_rap = "primary" if st.session_state.ext_choice == "RÁPIDO" else "secondary"
-            if st.button("⚡ RÁPIDO", key="btn_ext_rapido_v10", type=t_rap, use_container_width=True):
+            if st.button("⚡ RÁPIDO", key="btn_ext_rapido_v11", type=t_rap, use_container_width=True):
                 st.session_state.ext_choice = "RÁPIDO"
                 st.rerun()
 
         with col_ext2:
             t_graf = "primary" if st.session_state.ext_choice == "GRÁFICO" else "secondary"
-            if st.button("🖼️ GRÁFICO", key="btn_ext_grafico_v10", type=t_graf, use_container_width=True):
+            if st.button("🖼️ GRÁFICO", key="btn_ext_grafico_v11", type=t_graf, use_container_width=True):
                 st.session_state.ext_choice = "GRÁFICO"
                 st.rerun()
 
         with col_ext3:
             t_tec = "primary" if st.session_state.ext_choice == "TÉCNICO" else "secondary"
-            if st.button("🏗️ TÉCNICO", key="btn_ext_tecnico_v10", type=t_tec, use_container_width=True):
+            if st.button("🏗️ TÉCNICO", key="btn_ext_tecnico_v11", type=t_tec, use_container_width=True):
                 st.session_state.ext_choice = "TÉCNICO"
                 st.rerun()
 
         with col_ext4:
             t_comp = "primary" if st.session_state.ext_choice == "COMPLETO" else "secondary"
-            if st.button("🧮 COMPLETO", key="btn_ext_completo_v10", type=t_comp, use_container_width=True):
+            if st.button("🧮 COMPLETO", key="btn_ext_completo_v11", type=t_comp, use_container_width=True):
                 st.session_state.ext_choice = "COMPLETO"
                 st.rerun()
 
@@ -538,7 +601,7 @@ with tab_conv:
 
         st.write("")
         # BOTÓN ÚNICO RENOMBRADO A "EXPORTAR" QUE OCUPA EL 100% DEL ANCHO
-        btn_go = st.button("🚀 EXPORTAR", key="btn_run_export_final_v10", type="primary", disabled=not (has_valid_source and has_valid_destination), use_container_width=True)
+        btn_go = st.button("🚀 EXPORTAR", key="btn_run_export_final_v11", type="primary", disabled=not (has_valid_source and has_valid_destination), use_container_width=True)
 
         if btn_go:
             progress_bar = st.progress(0)
@@ -729,7 +792,7 @@ with tab_settings:
     # 2. DIAGNÓSTICO DEL SISTEMA (BOTÓN CENTRADO ÚNICAMENTE)
     col_d_center1, col_d_center2, col_d_center3 = st.columns([1, 2, 1])
     with col_d_center2:
-        if st.button("🔍 CHEQUEAR REQUISITOS DEL SISTEMA", key="btn_check_reqs_v10", type="primary", use_container_width=True):
+        if st.button("🔍 CHEQUEAR REQUISITOS DEL SISTEMA", key="btn_check_reqs_v11", type="primary", use_container_width=True):
             st.success(f"✔️ Sistema verificado: Python {sys.version.split()[0]} | CUDA GPU: {gpu_name}")
 
     st.write("")
