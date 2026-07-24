@@ -43,24 +43,16 @@ st.set_page_config(
 )
 
 # Inicializar session_state
-if "active_tab" not in st.session_state:
-    st.session_state.active_tab = "INTRO"
-if "upload_mode" not in st.session_state:
-    st.session_state.upload_mode = "archivo" # 'archivo', 'carpeta', 'web'
-if "selected_lang" not in st.session_state:
-    st.session_state.selected_lang = "es"
 if "disable_images" not in st.session_state:
     st.session_state.disable_images = False
 if "force_ocr" not in st.session_state:
     st.session_state.force_ocr = False
-if "active_preset" not in st.session_state:
-    st.session_state.active_preset = "contech"
+if "selected_lang" not in st.session_state:
+    st.session_state.selected_lang = "es"
 if "last_results" not in st.session_state:
     st.session_state.last_results = []
-if "chat_history" not in st.session_state:
-    st.session_state.chat_history = []
 
-# Estilos CSS personalizados (Glassmorphic Acrílico + Fluent Design)
+# Estilos CSS de Alta Calidad (Glassmorphic Acrílico + Fluent Design)
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap');
@@ -69,35 +61,57 @@ st.markdown("""
     footer { visibility: hidden !important; }
 
     .block-container {
-        max-width: 1000px !important;
-        padding-top: 5px !important;
-        padding-bottom: 15px !important;
+        max-width: 980px !important;
+        padding-top: 10px !important;
+        padding-bottom: 20px !important;
         margin: 0 auto !important;
     }
     
     .stApp {
-        background: #090d16;
+        background: #0b0f19;
         color: #f3f4f6;
         font-family: 'Inter', sans-serif;
     }
 
-    .glass-card {
-        background: rgba(17, 24, 39, 0.65);
+    /* CONTENEDOR GUIADO DE FLUJO (GLASSMORPHIC CARD) */
+    .step-container {
+        background: rgba(17, 24, 39, 0.6);
         backdrop-filter: blur(16px);
         -webkit-backdrop-filter: blur(16px);
         border: 1px solid rgba(255, 255, 255, 0.08);
         border-radius: 12px;
-        padding: 20px;
+        padding: 22px;
         margin-bottom: 20px;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-        transition: all 0.3s ease-in-out;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+        transition: all 0.3s ease;
     }
     
-    .glass-card:hover {
-        border-color: rgba(59, 130, 246, 0.3);
+    .step-container:hover {
+        border-color: rgba(59, 130, 246, 0.35);
         box-shadow: 0 8px 32px rgba(59, 130, 246, 0.15);
     }
     
+    .step-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 15px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        padding-bottom: 10px;
+    }
+    
+    .step-badge {
+        background: linear-gradient(135deg, #3b82f6, #06b6d4);
+        color: white;
+        font-family: 'Outfit', sans-serif;
+        font-weight: 800;
+        font-size: 13px;
+        padding: 4px 12px;
+        border-radius: 20px;
+        text-transform: uppercase;
+    }
+
+    /* TITULOS EN OUTFIT */
     h1, h2, h3, h4, .title-display {
         font-family: 'Outfit', sans-serif !important;
         font-weight: 700;
@@ -107,43 +121,39 @@ st.markdown("""
         -webkit-text-fill-color: transparent;
     }
 
-    hr {
-        border: 0 !important;
-        height: 1px !important;
-        background: rgba(255, 255, 255, 0.08) !important;
-        margin-top: 20px !important;
-        margin-bottom: 20px !important;
-    }
-
     p, span, li, td, th, table, label, div.stMarkdown p {
         font-size: 15px !important;
         line-height: 1.7 !important;
     }
     
-    div[data-testid="column"] button {
-        height: 48px !important;
-        border-radius: 10px !important;
-        background-color: rgba(17, 24, 39, 0.4) !important;
-        color: #9ca3af !important;
-        border: 1px solid rgba(255, 255, 255, 0.08) !important;
-        font-weight: 700 !important;
-        font-size: 12px !important;
-        font-family: 'Outfit', sans-serif !important;
-        text-transform: uppercase !important;
-        transition: all 0.3s ease !important;
-        display: inline-flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        cursor: pointer !important;
-        width: 100% !important;
-    }
-    div[data-testid="column"] button:hover {
-        color: #ffffff !important;
-        border-color: rgba(59, 130, 246, 0.5) !important;
-        background: linear-gradient(135deg, rgba(59, 130, 246, 0.12), rgba(6, 182, 212, 0.12)) !important;
-        box-shadow: 0 4px 15px rgba(59, 130, 246, 0.2) !important;
+    /* PESTAÑAS NATIVAS DE STREAMLIT (FLUIDAS, SIN REFRESCAR PÁGINA) */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 8px;
+        background-color: rgba(17, 24, 39, 0.4);
+        padding: 6px;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
     }
 
+    .stTabs [data-baseweb="tab"] {
+        height: 46px;
+        border-radius: 8px;
+        color: #9ca3af;
+        font-weight: 700;
+        font-size: 13px;
+        font-family: 'Outfit', sans-serif;
+        text-transform: uppercase;
+        border: none;
+        padding: 0 20px;
+    }
+
+    .stTabs [aria-selected="true"] {
+        background: linear-gradient(135deg, #3b82f6, #06b6d4) !important;
+        color: #ffffff !important;
+        box-shadow: 0 4px 15px rgba(59, 130, 246, 0.35) !important;
+    }
+
+    /* BOTONES PRIMARIOS */
     .stButton>button {
         background: linear-gradient(135deg, #3b82f6, #06b6d4) !important;
         color: #ffffff !important;
@@ -161,30 +171,31 @@ st.markdown("""
         transform: translateY(-2px);
         box-shadow: 0 6px 20px rgba(6, 182, 212, 0.4);
     }
-    
+
+    /* HARDWARE STATUS BAR */
     .hw-bar {
         background: rgba(15, 23, 42, 0.8);
-        border: 1px solid rgba(59, 130, 246, 0.2);
-        border-radius: 8px;
-        padding: 8px 16px;
+        border: 1px solid rgba(59, 130, 246, 0.25);
+        border-radius: 10px;
+        padding: 10px 18px;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        font-size: 12px;
+        font-size: 13px;
         color: #cbd5e1;
-        margin-bottom: 15px;
+        margin-bottom: 20px;
     }
-    
+
     .metric-card {
-        background: rgba(15, 23, 42, 0.5);
+        background: rgba(15, 23, 42, 0.6);
         border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 8px;
-        padding: 12px;
+        border-radius: 10px;
+        padding: 14px;
         text-align: center;
     }
     .metric-value {
         font-family: 'Outfit', sans-serif;
-        font-size: 22px;
+        font-size: 24px;
         font-weight: 700;
         color: #38bdf8;
     }
@@ -192,6 +203,7 @@ st.markdown("""
         font-size: 11px;
         color: #9ca3af;
         text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -202,7 +214,7 @@ def get_base64_image(image_path):
         encoded_string = base64.b64encode(image_file.read()).decode()
     return f"data:image/gif;base64,{encoded_string}"
 
-# Helper para parsear rangos de páginas (ej. "1-5, 10, 12-15")
+# Helper para parsear rangos de páginas
 def parse_page_range(range_str):
     if not range_str or not range_str.strip():
         return None
@@ -238,11 +250,10 @@ source: "PDF to .MD by jmcaamanog"
 # {clean_title}
 
 """
-    # Convertir cabeceras en wikilinks conceptuales
     obsidian_body = re.sub(r'^(##+)\s+(.*)$', r'\1 [[ \2 ]]', md_text, flags=re.MULTILINE)
     return frontmatter + obsidian_body
 
-# Helper para extraer tablas Markdown a archivo Excel (.xlsx)
+# Helper para extraer tablas Markdown a Excel
 def extract_tables_to_excel(md_text):
     if not PANDAS_AVAILABLE:
         return None
@@ -268,11 +279,10 @@ def extract_tables_to_excel(md_text):
     with pd.ExcelWriter(excel_buffer, engine='openpyxl') as writer:
         for idx, table_md in enumerate(tables):
             try:
-                # Convertir tabla Markdown a DataFrame
                 rows = [row.strip().split('|')[1:-1] for row in table_md.strip().split('\n')]
                 if len(rows) >= 2:
                     headers = [h.strip() for h in rows[0]]
-                    data = [[cell.strip() for cell in r] for r in rows[2:]] # Ignorar separador |---|
+                    data = [[cell.strip() for cell in r] for r in rows[2:]]
                     df = pd.DataFrame(data, columns=headers)
                     sheet_name = f"Tabla_{idx+1}"[:31]
                     df.to_excel(writer, sheet_name=sheet_name, index=False)
@@ -282,11 +292,11 @@ def extract_tables_to_excel(md_text):
     excel_buffer.seek(0)
     return excel_buffer.getvalue() if tables else None
 
-# Encabezado Principal con Logo Diseñado en SVG
+# Encabezado Principal con Logo SVG
 st.markdown("""
-<div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; margin-top: 5px;">
+<div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; margin-top: 5px;">
   <div style="display: flex; align-items: center; gap: 15px;">
-    <svg width="45" height="45" viewBox="0 0 24 24" fill="none" stroke="url(#blue-cyan-grad)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="url(#blue-cyan-grad)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
       <defs>
         <linearGradient id="blue-cyan-grad" x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stop-color="#3b82f6" />
@@ -300,20 +310,20 @@ st.markdown("""
       <polyline points="10 9 9 9 8 9" />
     </svg>
     <div>
-      <h1 style="margin: 0; font-family: 'Outfit', sans-serif; font-weight: 800; background: linear-gradient(135deg, #3b82f6, #06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 28px; text-transform: uppercase;">PDF to .MD by jmcaamanog</h1>
-      <p style='font-size: 13px !important; color: #9ca3af; margin: 0;'>Analizador inteligente de PDFs y Webs para AECO · Motor IA Local</p>
+      <h1 style="margin: 0; font-family: 'Outfit', sans-serif; font-weight: 800; background: linear-gradient(135deg, #3b82f6, #06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 30px; text-transform: uppercase;">PDF to .MD by jmcaamanog</h1>
+      <p style='font-size: 13.5px !important; color: #9ca3af; margin: 0;'>Conversor e indexador inteligente offline para Arquitectura Técnica y AECO</p>
     </div>
   </div>
 </div>
 """, unsafe_allow_html=True)
 
-# ----------------- HARDWARE STATUS BAR (TELEMETRÍA SUPERIOR) -----------------
+# TELEMETRÍA DE HARDWARE DE CABECERA
 cuda_available = torch.cuda.is_available()
 if cuda_available:
     gpu_name_short = torch.cuda.get_device_name(0)
     mem_alloc_mb = torch.cuda.memory_allocated(0) / (1024**2)
     mem_res_mb = torch.cuda.memory_reserved(0) / (1024**2)
-    hw_status_html = f"🟢 <strong>GPU:</strong> {gpu_name_short} &nbsp;|&nbsp; <strong>VRAM:</strong> {mem_alloc_mb:.1f} MB (Res: {mem_res_mb:.1f} MB)"
+    hw_status_html = f"🟢 <strong>GPU:</strong> {gpu_name_short} &nbsp;|&nbsp; <strong>VRAM:</strong> {mem_alloc_mb:.1f} MB"
 else:
     hw_status_html = "🔴 <strong>Acelerador:</strong> Modo CPU (Sin GPU CUDA)"
 
@@ -329,167 +339,65 @@ with col_hw2:
     if st.button("🧹 PURGAR VRAM", key="quick_vram_purge", help="Libera la memoria gráfica y caché del proyecto"):
         st.cache_resource.clear()
         st.cache_data.clear()
-        if cuda_available:
-            torch.cuda.empty_cache()
+        if cuda_available: torch.cuda.empty_cache()
         st.success("VRAM Purgada")
         time.sleep(0.8)
         st.rerun()
 
-# ----------------- BARRA DE NAVEGACIÓN EN PESTAÑAS -----------------
-col_t1, col_t2, col_t3, col_t4, col_t5, col_t6, col_t7 = st.columns(7)
+# ----------------- NAVEGACIÓN EN PESTAÑAS NATIVAS DE STREAMLIT (LATENCIA CERO) -----------------
+tab_conv, tab_tools, tab_sys, tab_author = st.tabs([
+    "⚡ CONVERTIR & FLUJO GUIADO",
+    "💬 ASISTENTE & COMPARADOR",
+    "⚙️ SISTEMA & CACHÉ",
+    "👨‍💻 AUTOR & CONTECH"
+])
 
-tabs = [
-    ("INTRO", col_t1, "nav_intro"),
-    ("CONVERTIR", col_t2, "nav_convert"),
-    ("CHAT IA", col_t3, "nav_chat"),
-    ("DIFF REVISIONES", col_t4, "nav_diff"),
-    ("AJUSTES DE IA", col_t5, "nav_config"),
-    ("REQUISITOS", col_t6, "nav_reqs"),
-    ("AUTOR", col_t7, "nav_about")
-]
+# ================= PESTAÑA 1: CONVERTIR & FLUJO GUIADO =================
+with tab_conv:
+    st.markdown("<p style='color: #9ca3af; font-size:14px !important; margin-bottom: 20px;'>Completa los pasos del flujo guiado para procesar tus documentos o páginas web de forma automática.</p>", unsafe_allow_html=True)
 
-for tab_name, col_obj, tab_key in tabs:
-    with col_obj:
-        if st.button(tab_name, use_container_width=True, key=tab_key):
-            st.session_state.active_tab = tab_name
-            st.rerun()
-
-active_child = 1
-for idx, (t_name, _, _) in enumerate(tabs):
-    if st.session_state.active_tab == t_name:
-        active_child = idx + 1
-        break
-
-st.markdown(f"""
-<style>
-    div[data-testid="column"]:nth-child({active_child}) button {{
-        background: linear-gradient(135deg, #3b82f6, #06b6d4) !important;
-        color: #ffffff !important;
-        font-weight: 700 !important;
-        border-color: rgba(255, 255, 255, 0.15) !important;
-        box-shadow: 0 0 15px rgba(59, 130, 246, 0.35) !important;
-    }}
-</style>
-""", unsafe_allow_html=True)
-
-st.write("")
-
-# ----------------- RENDERING DEL CONTENIDO DE LA PESTAÑA ACTIVA -----------------
-
-# PESTAÑA 0: INTRO
-if st.session_state.active_tab == "INTRO":
+    # STEP 1: ORIGEN DE DATOS
     st.markdown("""
-    <div class="glass-card">
-        <h3 style='color: #06b6d4; font-family:"Outfit"; font-size: 16px; margin-top: 0;'>¿QUÉ PUEDES HACER CON ESTA VERSIÓN PREMIUM?</h3>
-        <div style='display: grid; grid-template-columns: 1fr 1fr; gap: 12px; font-size: 13.5px; color: #d1d5db;'>
-            <div>📄 <strong>Conversión PDF local:</strong> Reconocimiento de texto y columnas con IA</div>
-            <div>🌐 <strong>Ingesta de Páginas Web:</strong> Extracción directa de URLs a Markdown con fotos</div>
-            <div>🚀 <strong>Exportador para Obsidian:</strong> Salida con Frontmatter YAML y wikilinks</div>
-            <div>📊 <strong>Exportador Excel (.xlsx):</strong> Volcado automático de tablas a libros Excel</div>
-            <div>🔍 <strong>Filtro de Rango de Páginas:</strong> Selecciona solo las páginas que necesitas</div>
-            <div>💬 <strong>Chat IA Offline:</strong> Realiza preguntas y resúmenes sobre tus documentos</div>
-            <div>🔀 <strong>Comparador de Revisiones:</strong> Diferencias en paralelo entre Rev A vs Rev B</div>
-            <div>🐳 <strong>Soporte Docker Integrado:</strong> Contenedor aislado para cero impacto en disco</div>
+    <div class="step-container">
+        <div class="step-header">
+            <span class="step-badge">Paso 1</span>
+            <h4 style="margin: 0; color: #3b82f6;">Seleccionar Origen de Datos</h4>
         </div>
-    </div>
     """, unsafe_allow_html=True)
 
-    st.markdown("""
-    <div style="border-left: 4px solid #3b82f6; background: rgba(59, 130, 246, 0.04); padding: 16px; border-radius: 0 8px 8px 0; margin-bottom: 20px;">
-        <span style="font-size:13px; line-height: 1.6; color: #d1d5db;">
-            🔧 <strong>Herramienta ConTech de Código Abierto:</strong> Creado por <strong>Jose Manuel Caamaño</strong> para la comunidad de la Arquitectura Técnica (<strong>COATAC</strong>) y el sector AECO.
-        </span>
-    </div>
-    """, unsafe_allow_html=True)
-
-    col_intro_btn_l, col_intro_btn_c, col_intro_btn_r = st.columns([1, 2, 1])
-    with col_intro_btn_c:
-        if st.button("🚀 EMPEZAR CONVERSIÓN", key="intro_btn_to_conv", use_container_width=True):
-            st.session_state.active_tab = "CONVERTIR"
-            st.rerun()
-
-# PESTAÑA 1: CONVERTIR
-elif st.session_state.active_tab == "CONVERTIR":
-    
-    st.markdown("<h3 style='margin-top:0; font-size:14px; color:#3b82f6; font-family:\"Outfit\"; text-transform:uppercase;'>PERFIL / PRESET RÁPIDO DE IA</h3>", unsafe_allow_html=True)
-    
-    col_p1, col_p2, col_p3 = st.columns(3)
-    
-    with col_p1:
-        if st.button("⚡ Modo Rápido (Sin Fotos)", key="p_rapido"):
-            st.session_state.active_preset = "rapido"
-            st.session_state.disable_images = True
-            st.session_state.force_ocr = False
-            st.rerun()
-            
-    with col_p2:
-        if st.button("🏗️ Modo ConTech (Tablas & Fotos)", key="p_contech"):
-            st.session_state.active_preset = "contech"
-            st.session_state.disable_images = False
-            st.session_state.force_ocr = False
-            st.rerun()
-            
-    with col_p3:
-        if st.button("🧮 Modo OCR & LaTeX Profundo", key="p_ocr"):
-            st.session_state.active_preset = "ocr"
-            st.session_state.disable_images = False
-            st.session_state.force_ocr = True
-            st.rerun()
-
-    st.divider()
-
-    st.markdown("<h3 style='margin-top:0; font-size:14px; color:#3b82f6; font-family:\"Outfit\"; text-transform:uppercase;'>ORIGEN DE DATOS & FILTROS</h3>", unsafe_allow_html=True)
-    
-    col_m1, col_m2, col_m3 = st.columns(3)
-    
-    with col_m1:
-        if st.button("📁 ARCHIVO(S) PDF", key="set_mode_file"):
-            st.session_state.upload_mode = "archivo"
-            st.rerun()
-            
-    with col_m2:
-        if st.button("📂 CARPETA LOCAL", key="set_mode_folder"):
-            st.session_state.upload_mode = "carpeta"
-            st.rerun()
-
-    with col_m3:
-        if st.button("🌐 PÁGINA WEB (URL)", key="set_mode_web"):
-            st.session_state.upload_mode = "web"
-            st.rerun()
+    source_type = st.radio(
+        "Tipo de Origen:",
+        ["📁 Archivo(s) PDF Local", "📂 Carpeta Completa de PDFs", "🌐 Página Web (URL)"],
+        horizontal=True,
+        key="source_type_radio"
+    )
 
     files_to_process = []
     web_url_target = None
     page_range_filter = None
-    
-    st.write("")
 
-    if st.session_state.upload_mode == "archivo":
+    if source_type == "📁 Archivo(s) PDF Local":
         col_up, col_info = st.columns([2, 1])
         with col_up:
-            uploaded_files = st.file_uploader("Arrastra tus archivos PDF aquí (puedes seleccionar varios)", type=["pdf"], accept_multiple_files=True)
+            uploaded_files = st.file_uploader("Arrastra tus PDFs aquí:", type=["pdf"], accept_multiple_files=True)
             if uploaded_files:
                 files_to_process = uploaded_files
-            
-            page_range_str = st.text_input("🔍 Convertir solo páginas específicas (Opcional):", placeholder="Ejemplo: 1-5, 10, 15-20 (deja vacío para todo el PDF)")
-            page_range_filter = parse_page_range(page_range_str)
 
         with col_info:
-            st.markdown("<div class='glass-card' style='padding: 15px;'>", unsafe_allow_html=True)
+            st.markdown("<div style='background: rgba(15, 23, 42, 0.5); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);'>", unsafe_allow_html=True)
             st.markdown("<h5 style='color: #06b6d4; margin-top:0; font-family:\"Outfit\";'>Detalles del Lote</h5>", unsafe_allow_html=True)
             if uploaded_files:
                 total_size = sum(f.size for f in uploaded_files) / (1024*1024)
-                st.markdown(f"""
-                <p style='font-size: 13px !important; margin-bottom: 5px;'><strong>Cantidad:</strong> {len(uploaded_files)} PDF(s)</p>
-                <p style='font-size: 13px !important; margin-bottom: 8px;'><strong>Tamaño:</strong> {total_size:.2f} MB</p>
-                <div style='max-height: 80px; overflow-y: auto; font-size: 11px; color: #9ca3af; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 5px;'>
-                    {'<br>'.join(f"• {f.name[:25]}" for f in uploaded_files)}
-                </div>
-                """, unsafe_allow_html=True)
+                st.markdown(f"<p style='font-size: 13px !important; margin-bottom: 4px;'>• <strong>Cantidad:</strong> {len(uploaded_files)} PDF(s)</p>", unsafe_allow_html=True)
+                st.markdown(f"<p style='font-size: 13px !important; margin-bottom: 0;'>• <strong>Peso Total:</strong> {total_size:.2f} MB</p>", unsafe_allow_html=True)
             else:
-                st.markdown("<p style='color: #9ca3af; font-style: italic; font-size: 13px !important;'>Ningún archivo cargado.</p>", unsafe_allow_html=True)
+                st.markdown("<p style='color: #9ca3af; font-style: italic; font-size: 12px !important; margin:0;'>Esperando archivos...</p>", unsafe_allow_html=True)
             st.markdown("</div>", unsafe_allow_html=True)
 
-    elif st.session_state.upload_mode == "carpeta":
+        page_range_str = st.text_input("🔍 Convertir solo páginas específicas (Opcional):", placeholder="Ejemplo: 1-5, 10, 15-20 (deja vacío para todo el PDF)")
+        page_range_filter = parse_page_range(page_range_str)
+
+    elif source_type == "📂 Carpeta Completa de PDFs":
         folder_path = st.text_input("Ingresa la ruta absoluta de tu carpeta de PDFs local:", placeholder="Ejemplo: C:\\Proyectos\\PDFs")
         page_range_str = st.text_input("🔍 Convertir solo páginas específicas (Opcional):", placeholder="Ejemplo: 1-5, 10")
         page_range_filter = parse_page_range(page_range_str)
@@ -503,9 +411,46 @@ elif st.session_state.active_tab == "CONVERTIR":
                     sz = os.path.getsize(fp) / (1024*1024)
                     files_to_process.append({"name": f, "path": fp, "size": sz})
 
-    elif st.session_state.upload_mode == "web":
+    elif source_type == "🌐 Página Web (URL)":
         web_url_target = st.text_input("Dirección Web (URL):", placeholder="https://ejemplo.com/articulo-tecnico")
 
+    st.markdown("</div>", unsafe_allow_html=True)
+
+    # STEP 2: PRESET & PERFIL DE IA
+    st.markdown("""
+    <div class="step-container">
+        <div class="step-header">
+            <span class="step-badge">Paso 2</span>
+            <h4 style="margin: 0; color: #3b82f6;">Elegir Perfil de Procesamiento IA</h4>
+        </div>
+    """, unsafe_allow_html=True)
+
+    col_pr1, col_pr2, col_pr3 = st.columns(3)
+    with col_pr1:
+        st.markdown("**🏗️ Modo ConTech / Proyecto**")
+        st.markdown("<span style='font-size: 12px !important; color: #9ca3af;'>Equilibrado para memorias, tablas y planos.</span>", unsafe_allow_html=True)
+    with col_pr2:
+        st.markdown("**⚡ Modo Rápido**")
+        st.markdown("<span style='font-size: 12px !important; color: #9ca3af;'>Desactiva extracción de imágenes.</span>", unsafe_allow_html=True)
+    with col_pr3:
+        st.markdown("**🧮 Modo OCR Profundo**")
+        st.markdown("<span style='font-size: 12px !important; color: #9ca3af;'>Fuerza OCR para escaneos y ecuaciones.</span>", unsafe_allow_html=True)
+
+    preset_choice = st.selectbox("Selecciona Perfil de IA:", ["🏗️ Modo ConTech (Tablas & Fotos)", "⚡ Modo Rápido (Sin Fotos)", "🧮 Modo OCR & LaTeX Profundo"])
+
+    if "⚡ Modo Rápido" in preset_choice:
+        st.session_state.disable_images = True
+        st.session_state.force_ocr = False
+    elif "🧮 Modo OCR" in preset_choice:
+        st.session_state.disable_images = False
+        st.session_state.force_ocr = True
+    else:
+        st.session_state.disable_images = False
+        st.session_state.force_ocr = False
+
+    st.markdown("</div>", unsafe_allow_html=True)
+
+    # STEP 3: EJECUCIÓN DEL PROCESAMIENTO
     def convert_url_to_md(url, extract_images=True):
         if not WEB_EXTRACTOR_AVAILABLE:
             import urllib.request
@@ -560,8 +505,7 @@ elif st.session_state.active_tab == "CONVERTIR":
             "disable_image_extraction": disable_img_ext,
             "force_ocr": force_ocr
         }
-        if lang:
-            config_dict["languages"] = lang
+        if lang: config_dict["languages"] = lang
 
         config_parser = ConfigParser(config_dict)
         artifact_dict = create_model_dict()
@@ -572,13 +516,20 @@ elif st.session_state.active_tab == "CONVERTIR":
             renderer=config_parser.get_renderer()
         )
 
-    can_trigger = (files_to_process and len(files_to_process) > 0) or (st.session_state.upload_mode == "web" and web_url_target)
+    can_trigger = (files_to_process and len(files_to_process) > 0) or (source_type == "🌐 Página Web (URL)" and web_url_target)
     
     if can_trigger:
-        st.divider()
+        st.markdown("""
+        <div class="step-container">
+            <div class="step-header">
+                <span class="step-badge">Paso 3</span>
+                <h4 style="margin: 0; color: #3b82f6;">Ejecutar Conversión</h4>
+            </div>
+        """, unsafe_allow_html=True)
+        
         col_c1, col_c2, col_c3 = st.columns([1, 2, 1])
         with col_c2:
-            trigger_conversion = st.button("🚀 INICIAR PROCESAMIENTO IA", key="btn_convert_go")
+            trigger_conversion = st.button("🚀 INICIAR CONVERSIÓN AHORA", key="btn_convert_go")
             
         if trigger_conversion:
             pipeline_box = st.empty()
@@ -586,9 +537,9 @@ elif st.session_state.active_tab == "CONVERTIR":
             start_time = time.time()
             converted_results = []
             
-            if st.session_state.upload_mode == "web":
+            if source_type == "🌐 Página Web (URL)":
                 progress_bar.progress(0.5)
-                pipeline_box.markdown(f"<div class='glass-card'>🌐 Extrayendo datos de: <code>{web_url_target}</code></div>", unsafe_allow_html=True)
+                pipeline_box.markdown(f"<div class='step-container'>🌐 Extrayendo URL: <code>{web_url_target}</code></div>", unsafe_allow_html=True)
                 try:
                     title, md_content, web_imgs = convert_url_to_md(web_url_target, extract_images=not st.session_state.disable_images)
                     converted_results.append({
@@ -604,11 +555,11 @@ elif st.session_state.active_tab == "CONVERTIR":
                     total_files = len(files_to_process)
                     
                     for idx, file_item in enumerate(files_to_process):
-                        file_name = file_item.name if st.session_state.upload_mode == "archivo" else file_item["name"]
+                        file_name = file_item.name if source_type == "📁 Archivo(s) PDF Local" else file_item["name"]
                         progress_bar.progress((idx + 0.5) / total_files)
-                        pipeline_box.markdown(f"<div class='glass-card'>📄 Procesando {idx+1}/{total_files}: {file_name}</div>", unsafe_allow_html=True)
+                        pipeline_box.markdown(f"<div class='step-container'>📄 Analizando documento {idx+1}/{total_files}: {file_name}</div>", unsafe_allow_html=True)
                         
-                        if st.session_state.upload_mode == "archivo":
+                        if source_type == "📁 Archivo(s) PDF Local":
                             with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp_file:
                                 tmp_file.write(file_item.read())
                                 input_path = tmp_file.name
@@ -624,7 +575,7 @@ elif st.session_state.active_tab == "CONVERTIR":
                             "markdown": markdown_text,
                             "images": extracted_images
                         })
-                        if st.session_state.upload_mode == "archivo":
+                        if source_type == "📁 Archivo(s) PDF Local":
                             try: os.unlink(input_path)
                             except Exception: pass
 
@@ -638,123 +589,107 @@ elif st.session_state.active_tab == "CONVERTIR":
             
             if converted_results:
                 st.session_state.last_results = converted_results
-                st.success(f"🎉 Procesamiento Completado en {elapsed_time:.1f}s")
-                
-                m_col1, m_col2, m_col3, m_col4 = st.columns(4)
-                total_words = sum(len(res.get("markdown", "").split()) for res in converted_results)
-                total_imgs = sum(len(res.get("images", {})) for res in converted_results if res.get("images"))
-                
-                with m_col1: st.markdown(f"<div class='metric-card'><div class='metric-value'>{len(converted_results)}</div><div class='metric-label'>Documentos</div></div>", unsafe_allow_html=True)
-                with m_col2: st.markdown(f"<div class='metric-card'><div class='metric-value'>{total_words:,}</div><div class='metric-label'>Palabras</div></div>", unsafe_allow_html=True)
-                with m_col3: st.markdown(f"<div class='metric-card'><div class='metric-value'>{total_imgs}</div><div class='metric-label'>Imágenes</div></div>", unsafe_allow_html=True)
-                with m_col4: st.markdown(f"<div class='metric-card'><div class='metric-value'>{elapsed_time:.1f}s</div><div class='metric-label'>Tiempo</div></div>", unsafe_allow_html=True)
-                
-                st.write("")
-                
-                # BOTONES DE EXPORTACIÓN AVANZADOS
-                exp_col1, exp_col2, exp_col3 = st.columns(3)
-                
-                with exp_col1:
-                    zip_buffer = io.BytesIO()
-                    with zipfile.ZipFile(zip_buffer, "a", zipfile.ZIP_DEFLATED, False) as zip_file:
-                        for result in converted_results:
-                            base_n = os.path.splitext(result["name"])[0]
-                            zip_file.writestr(f"{base_n}.md", result["markdown"].encode("utf-8"))
-                            if result.get("images") and not st.session_state.disable_images:
-                                for img_n, img_obj in result["images"].items():
-                                    img_byte_arr = io.BytesIO()
-                                    img_obj.save(img_byte_arr, format="PNG")
-                                    zip_file.writestr(f"{base_n}_images/{img_n}", img_byte_arr.getvalue())
-                    st.download_button("📥 Descargar ZIP (.zip)", zip_buffer.getvalue(), "resultado_conversion.zip", "application/zip", use_container_width=True)
 
-                with exp_col2:
-                    obsidian_md = format_for_obsidian(converted_results[0]["markdown"], converted_results[0]["name"])
-                    st.download_button("🚀 Exportar para Obsidian (.md)", obsidian_md.encode("utf-8"), f"obsidian_{converted_results[0]['name']}", "text/markdown", use_container_width=True)
+        st.markdown("</div>", unsafe_allow_html=True)
 
-                with exp_col3:
-                    excel_bytes = extract_tables_to_excel(converted_results[0]["markdown"])
-                    if excel_bytes:
-                        st.download_button("📊 Descargar Tablas en Excel (.xlsx)", excel_bytes, "tablas_extraidas.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", use_container_width=True)
-                    else:
-                        st.button("📊 Excel (Sin Tablas)", disabled=True, use_container_width=True)
-
-                st.markdown("<h4 style='color:#38bdf8; font-family:\"Outfit\"; margin-top:20px;'>🔍 Inspector y Previsualizador</h4>", unsafe_allow_html=True)
-                insp_tab1, insp_tab2 = st.tabs(["👁️ Vista Previa Formateada", "📝 Código Fuente Markdown"])
-                first_md = converted_results[0].get("markdown", "")
-                
-                with insp_tab1:
-                    st.markdown("<div class='glass-card' style='max-height: 400px; overflow-y: auto;'>", unsafe_allow_html=True)
-                    st.markdown(first_md, unsafe_allow_html=True)
-                    st.markdown("</div>", unsafe_allow_html=True)
-                with insp_tab2:
-                    st.code(first_md, language="markdown")
-
-# PESTAÑA 2: CHAT CON DOCUMENTO
-elif st.session_state.active_tab == "CHAT IA":
-    st.markdown("<h3 style='margin-top:0;'>💬 Chat Asistente con tu Documento (100% Offline)</h3>", unsafe_allow_html=True)
-    
-    if not st.session_state.last_results:
-        st.info("ℹ️ Procesa un PDF o Página Web en la pestaña CONVERTIR para empezar a realizar consultas sobre el documento.")
-    else:
-        doc_text = st.session_state.last_results[0].get("markdown", "")
-        doc_name = st.session_state.last_results[0].get("name", "Documento")
-        st.markdown(f"<div class='glass-card'>📄 <strong>Documento en Memoria:</strong> <code>{doc_name}</code> ({len(doc_text.split())} palabras)</div>", unsafe_allow_html=True)
+    # STEP 4: RESULTADOS & EXPORTACIÓN
+    if st.session_state.last_results:
+        converted_results = st.session_state.last_results
+        st.markdown("""
+        <div class="step-container" style="border-color: #4ade80;">
+            <div class="step-header">
+                <span class="step-badge" style="background: linear-gradient(135deg, #22c55e, #10b981);">Paso 4</span>
+                <h4 style="margin: 0; color: #4ade80;">Resultados & Exportación Multiformato</h4>
+            </div>
+        """, unsafe_allow_html=True)
         
-        user_query = st.text_input("Haz una pregunta o consulta sobre el documento:", placeholder="Ejemplo: Resúmeme los puntos clave del documento o busca precios de partidas")
+        m_col1, m_col2, m_col3, m_col4 = st.columns(4)
+        total_words = sum(len(res.get("markdown", "").split()) for res in converted_results)
+        total_imgs = sum(len(res.get("images", {})) for res in converted_results if res.get("images"))
         
-        if user_query:
-            # Motor de búsqueda offline local e inteligente
-            keywords = [w.lower() for w in user_query.split() if len(w) > 3]
-            matching_lines = []
-            for line in doc_text.split('\n'):
-                if any(kw in line.lower() for kw in keywords):
-                    matching_lines.append(line)
-                    
-            st.markdown("#### 🤖 Respuesta del Asistente Offline")
-            if matching_lines:
-                st.success(f"Se encontraron {len(matching_lines)} fragmentos relevantes en `{doc_name}`:")
-                st.markdown("<div class='glass-card' style='max-height:300px; overflow-y:auto;'>", unsafe_allow_html=True)
-                for line in matching_lines[:15]:
-                    st.markdown(f"• {line}")
-                st.markdown("</div>", unsafe_allow_html=True)
+        with m_col1: st.markdown(f"<div class='metric-card'><div class='metric-value'>{len(converted_results)}</div><div class='metric-label'>Documentos</div></div>", unsafe_allow_html=True)
+        with m_col2: st.markdown(f"<div class='metric-card'><div class='metric-value'>{total_words:,}</div><div class='metric-label'>Palabras</div></div>", unsafe_allow_html=True)
+        with m_col3: st.markdown(f"<div class='metric-card'><div class='metric-value'>{total_imgs}</div><div class='metric-label'>Imágenes</div></div>", unsafe_allow_html=True)
+        with m_col4: st.markdown(f"<div class='metric-card'><div class='metric-value'>Listo</div><div class='metric-label'>Estado</div></div>", unsafe_allow_html=True)
+        
+        st.write("")
+        
+        # BOTONES DE EXPORTACIÓN
+        exp_col1, exp_col2, exp_col3 = st.columns(3)
+        
+        with exp_col1:
+            zip_buffer = io.BytesIO()
+            with zipfile.ZipFile(zip_buffer, "a", zipfile.ZIP_DEFLATED, False) as zip_file:
+                for result in converted_results:
+                    base_n = os.path.splitext(result["name"])[0]
+                    zip_file.writestr(f"{base_n}.md", result["markdown"].encode("utf-8"))
+                    if result.get("images") and not st.session_state.disable_images:
+                        for img_n, img_obj in result["images"].items():
+                            img_byte_arr = io.BytesIO()
+                            img_obj.save(img_byte_arr, format="PNG")
+                            zip_file.writestr(f"{base_n}_images/{img_n}", img_byte_arr.getvalue())
+            st.download_button("📥 Descargar ZIP (.zip)", zip_buffer.getvalue(), "resultado_conversion.zip", "application/zip", use_container_width=True)
+
+        with exp_col2:
+            obsidian_md = format_for_obsidian(converted_results[0]["markdown"], converted_results[0]["name"])
+            st.download_button("🚀 Exportar para Obsidian (.md)", obsidian_md.encode("utf-8"), f"obsidian_{converted_results[0]['name']}", "text/markdown", use_container_width=True)
+
+        with exp_col3:
+            excel_bytes = extract_tables_to_excel(converted_results[0]["markdown"])
+            if excel_bytes:
+                st.download_button("📊 Descargar Tablas en Excel (.xlsx)", excel_bytes, "tablas_extraidas.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", use_container_width=True)
             else:
-                st.warning("No se encontraron coincidencias exactas para tu consulta en el texto del documento.")
+                st.button("📊 Excel (Sin Tablas)", disabled=True, use_container_width=True)
 
-# PESTAÑA 3: COMPARADOR DE REVISIONES
-elif st.session_state.active_tab == "DIFF REVISIONES":
-    st.markdown("<h3 style='margin-top:0;'>🔀 Comparador de Revisiones de Documentos</h3>", unsafe_allow_html=True)
-    st.write("Compara dos archivos o textos de proyectos (Rev A vs Rev B) para visualizar las diferencias lado a lado.")
-    
-    col_d1, col_d2 = st.columns(2)
-    with col_d1:
-        rev_a = st.text_area("Documento / Texto Revisión A:", height=200, placeholder="Pega el contenido o Markdown de la Revisión A")
-    with col_d2:
-        rev_b = st.text_area("Documento / Texto Revisión B:", height=200, placeholder="Pega el contenido o Markdown de la Revisión B")
+        st.markdown("<h4 style='color:#38bdf8; font-family:\"Outfit\"; margin-top:20px;'>🔍 Inspector de Resultados</h4>", unsafe_allow_html=True)
+        insp_tab1, insp_tab2 = st.tabs(["👁️ Vista Previa Formateada", "📝 Código Fuente Markdown"])
+        first_md = converted_results[0].get("markdown", "")
         
-    if rev_a and rev_b:
-        st.markdown("#### 📊 Resultado de la Comparativa (Diff)")
-        diff = difflib.HtmlDiff().make_file(rev_a.splitlines(), rev_b.splitlines(), fromdesc="Revisión A", todesc="Revisión B")
-        st.components.v1.html(diff, height=400, scrolling=True)
+        with insp_tab1:
+            st.markdown("<div class='step-container' style='max-height: 380px; overflow-y: auto;'>", unsafe_allow_html=True)
+            st.markdown(first_md, unsafe_allow_html=True)
+            st.markdown("</div>", unsafe_allow_html=True)
+        with insp_tab2:
+            st.code(first_md, language="markdown")
 
-# PESTAÑA 4: AJUSTES DE IA
-elif st.session_state.active_tab == "AJUSTES DE IA":
-    st.markdown("<h3 style='margin-top:0;'>⚙️ Ajustes de Procesamiento</h3>", unsafe_allow_html=True)
+        st.markdown("</div>", unsafe_allow_html=True)
+
+# ================= PESTAÑA 2: ASISTENTE & COMPARADOR =================
+with tab_tools:
+    tool_tab1, tool_tab2 = st.tabs(["💬 Chat IA Offline", "🔀 Comparador de Revisiones (Diff)"])
     
-    st.session_state.disable_images = st.checkbox("Desactivar extracción de imágenes", value=st.session_state.disable_images)
-    st.session_state.force_ocr = st.checkbox("Forzar procesamiento OCR completo", value=st.session_state.force_ocr)
+    with tool_tab1:
+        st.markdown("<h3 style='margin-top:0;'>💬 Chat Asistente sobre tu Documento</h3>", unsafe_allow_html=True)
+        if not st.session_state.last_results:
+            st.info("ℹ️ Procesa un documento en la pestaña CONVERTIR para habilitar el asistente de consultas.")
+        else:
+            doc_text = st.session_state.last_results[0].get("markdown", "")
+            doc_name = st.session_state.last_results[0].get("name", "Documento")
+            st.markdown(f"<div class='step-container'>📄 <strong>Documento Activo:</strong> <code>{doc_name}</code> ({len(doc_text.split())} palabras)</div>", unsafe_allow_html=True)
+            
+            user_query = st.text_input("Introduce tu consulta o término a buscar:", placeholder="Ejemplo: Resumen de pliegos, partidas o normativa")
+            if user_query:
+                keywords = [w.lower() for w in user_query.split() if len(w) > 3]
+                matching_lines = [line for line in doc_text.split('\n') if any(kw in line.lower() for kw in keywords)]
+                if matching_lines:
+                    st.success(f"Se encontraron {len(matching_lines)} coincidencias:")
+                    for line in matching_lines[:15]:
+                        st.markdown(f"• {line}")
+                else:
+                    st.warning("No se encontraron fragmentos que coincidan con los términos de búsqueda.")
 
-    st.divider()
-    st.markdown("<h4 style='color: #06b6d4; margin-top:0; font-family:\"Outfit\";'>⚙️ Opciones de Memoria del Servidor</h4>", unsafe_allow_html=True)
-    
-    if st.button("🧹 LIMPIAR CACHÉ DE IA"):
-        st.cache_resource.clear()
-        st.cache_data.clear()
-        if torch.cuda.is_available(): torch.cuda.empty_cache()
-        st.success("✔️ Caché RAM/VRAM liberada correctamente.")
+    with tool_tab2:
+        st.markdown("<h3 style='margin-top:0;'>🔀 Comparador de Revisiones de Proyecto</h3>", unsafe_allow_html=True)
+        col_d1, col_d2 = st.columns(2)
+        with col_d1: rev_a = st.text_area("Documento / Revisión A:", height=180)
+        with col_d2: rev_b = st.text_area("Documento / Revisión B:", height=180)
+        if rev_a and rev_b:
+            diff = difflib.HtmlDiff().make_file(rev_a.splitlines(), rev_b.splitlines(), fromdesc="Revisión A", todesc="Revisión B")
+            st.components.v1.html(diff, height=400, scrolling=True)
 
-# PESTAÑA 5: REQUISITOS
-elif st.session_state.active_tab == "REQUISITOS":
-    st.markdown("<h3 style='margin-top:0; font-family:\"Outfit\";'>💻 Estado del Acelerador Gráfico (CUDA) & Docker</h3>", unsafe_allow_html=True)
+# ================= PESTAÑA 3: SISTEMA & CACHÉ =================
+with tab_sys:
+    st.markdown("<h3 style='margin-top:0;'>💻 Diagnóstico de Hardware y Memoria</h3>", unsafe_allow_html=True)
     
     cuda_status_str = "🟢 ACTIVA (Acelerada por GPU)" if torch.cuda.is_available() else "🔴 INACTIVA (Usando CPU)"
     st.markdown(f"""
@@ -764,21 +699,81 @@ elif st.session_state.active_tab == "REQUISITOS":
             <td style='padding:10px 0; font-weight:bold;'>{cuda_status_str}</td>
         </tr>
         <tr style='border-bottom:1px solid rgba(255,255,255,0.05);'>
-            <td style='padding:10px 0; color:#9ca3af;'>Directorio de Caché de Modelos</td>
-            <td style='padding:10px 0;'><code>./models_cache</code> (En la carpeta del proyecto)</td>
+            <td style='padding:10px 0; color:#9ca3af;'>Caché Local de Modelos</td>
+            <td style='padding:10px 0;'><code>./models_cache</code> (Carpeta del proyecto)</td>
         </tr>
     </table>
     """, unsafe_allow_html=True)
+    
+    st.divider()
+    if st.button("🧹 PURGAR CACHÉ RAM Y VRAM"):
+        st.cache_resource.clear()
+        st.cache_data.clear()
+        if torch.cuda.is_available(): torch.cuda.empty_cache()
+        st.success("✔️ Memoria RAM y VRAM liberadas correctamente.")
 
-# PESTAÑA 6: AUTOR
-elif st.session_state.active_tab == "AUTOR":
+# ================= PESTAÑA 4: AUTOR & CONTECH =================
+with tab_author:
     col_pic, col_desc = st.columns([1, 2])
+    
     with col_pic:
         gif_file = "yo_animado.gif"
         if os.path.exists(gif_file):
-            base64_gif = get_base64_image(gif_file)
-            st.markdown(f"<div style='text-align: center;'><img src='{base64_gif}' style='width: 180px; height: 180px; border-radius: 50%; border: 3px solid #3b82f6;' /><p style='font-weight: bold; margin-top:10px;'>José Manuel Caamaño González</p></div>", unsafe_allow_html=True)
+            try:
+                base64_gif = get_base64_image(gif_file)
+                st.markdown(f"""
+                <div style='text-align: center;'>
+                    <a href='https://jmcaamanog.pages.dev/' target='_blank'>
+                        <img src='{base64_gif}' style='width: 180px; height: 180px; border-radius: 50%; border: 3px solid #3b82f6; box-shadow: 0 4px 15px rgba(59,130,246,0.45); object-fit: cover; transition: all 0.3s ease-in-out; cursor: pointer;' onmouseover='this.style.transform="scale(1.06)"' onmouseout='this.style.transform="scale(1)"' title="Visitar mi Web Profesional" />
+                    </a>
+                    <p style='margin-top: 15px; font-weight: bold; font-family: "Outfit"; font-size: 18px; color:#ffffff; margin-bottom: 0;'>José Manuel Caamaño González</p>
+                    <p style='color: #9ca3af; font-size: 12px; margin-top: 2px;'>A Coruña (Galicia)</p>
+                </div>
+                """, unsafe_allow_html=True)
+            except Exception:
+                st.error("Error al cargar la foto de perfil.")
+        else:
+            st.markdown("""
+            <div style='text-align: center;'>
+                <a href='https://jmcaamanog.pages.dev/' target='_blank' style='text-decoration: none;'>
+                    <div style='background: linear-gradient(135deg, #3b82f6, #06b6d4); width: 150px; height: 150px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; box-shadow: 0 4px 15px rgba(59,130,246,0.35); cursor: pointer;'>
+                        <span style='font-size: 52px;'>👤</span>
+                    </div>
+                </a>
+                <p style='margin-top: 15px; font-weight: bold; font-family: "Outfit"; font-size: 18px; color:#ffffff;'>José Manuel Caamaño González</p>
+                <p style='color: #9ca3af; font-size: 12px; margin-top: -10px;'>A Coruña (Galicia)</p>
+            </div>
+            """, unsafe_allow_html=True)
+        
     with col_desc:
-        st.markdown("<h3 style='margin-top:0; color:#3b82f6;'>Arquitecto Técnico & ConTech Developer</h3>", unsafe_allow_html=True)
-        st.write("Arquitecto Técnico y BIM Manager operando desde A Coruña. ☕")
-        st.markdown("[LinkedIn](https://www.linkedin.com/in/jmcaamanog/) | [GitHub](https://github.com/jmcaamanog)")
+        st.markdown("<h3 style='margin-top:0; font-family:\"Outfit\"; color:#3b82f6;'>Arquitecto Técnico & ConTech Developer</h3>", unsafe_allow_html=True)
+        st.markdown("""
+        <div style='font-size: 14px; text-align: justify; line-height: 1.6;'>
+            ¡Hola! Soy Jose Manuel Caamaño, Arquitecto técnico ConTech!👋<br>
+            <strong>Digital Product Lead | ConTech & Digital Twin SaaS | BIM, Energy Modeling & Sustainability | Data Analytics (SQL, Power BI)</strong>
+            <br><br>
+            Arquitecto Técnico y BIM Manager operando desde la trinchera en A Coruña. ☕ Me dedico a construir puentes entre la construcción tradicional (sector AECO) y el ecosistema digital. Si algo se puede automatizar, auditar o visualizar en 3D, probablemente ya esté escribiendo un script en Python para hacerlo.
+            <br><br>
+            Proyecto de código abierto orgullosamente desarrollado para la comunidad de la Arquitectura Técnica (<strong>COATAC</strong>).
+        </div>
+        """, unsafe_allow_html=True)
+        
+        st.markdown("""
+        <div style="margin-top: 20px; display: flex; gap: 10px; text-align: left;">
+          <a href="https://github.com/jmcaamanog" target="_blank" style="text-decoration: none; display: inline-flex; align-items: center; gap: 10px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 10px 20px; color: #ffffff; font-family: 'Outfit', sans-serif; font-weight: 600; font-size: 14px; transition: all 0.3s ease;">
+            <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24" style="vertical-align: middle;">
+              <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+            </svg>
+            <span>GitHub</span>
+          </a>
+          <a href="https://www.linkedin.com/in/jmcaamanog/" target="_blank" style="text-decoration: none; display: inline-flex; align-items: center; gap: 10px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 10px 20px; color: #ffffff; font-family: 'Outfit', sans-serif; font-weight: 600; font-size: 14px; transition: all 0.3s ease;">
+            <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24" style="vertical-align: middle;">
+              <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.779-1.75-1.75s.784-1.75 1.75-1.75 1.75.779 1.75 1.75-.784 1.75-1.75 1.75zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+            </svg>
+            <span>LinkedIn</span>
+          </a>
+          <a href="https://jmcaamanog.pages.dev/" target="_blank" style="text-decoration: none; display: inline-flex; align-items: center; gap: 10px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 10px 20px; color: #ffffff; font-family: 'Outfit', sans-serif; font-weight: 600; font-size: 14px; transition: all 0.3s ease;">
+            <span>🌐 Web</span>
+          </a>
+        </div>
+        """, unsafe_allow_html=True)
