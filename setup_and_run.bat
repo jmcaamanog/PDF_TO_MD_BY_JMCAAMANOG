@@ -2,6 +2,12 @@
 title Lanzador de Conversor PDF a Markdown
 cd /d "%~dp0"
 
+:: Forzar todas las cachés (HuggingFace, PyTorch, Marker, Pip) dentro de la carpeta del proyecto
+set HF_HOME=%~dp0models_cache
+set TORCH_HOME=%~dp0models_cache
+set MARKER_HOME=%~dp0models_cache
+set PIP_CACHE_DIR=%~dp0models_cache\pip_cache
+
 echo =====================================================================
 echo       Lanzador Automático - Conversor de PDF a Markdown (Local)
 echo =====================================================================
