@@ -52,7 +52,7 @@ if "default_lang" not in st.session_state:
 if "last_results" not in st.session_state:
     st.session_state.last_results = []
 
-# Estilos CSS de Alta Calidad (Pestañas 100% Ancho Repartidas a Partes Iguales + Tablas Estilizadas)
+# Estilos CSS de Alta Calidad (+25% Más Ancho, Pestañas 100% Ancho y Botones Activos/Inactivos)
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap');
@@ -74,22 +74,16 @@ st.markdown("""
         font-family: 'Inter', sans-serif;
     }
 
-    /* CONTENEDORES GLASSMORPHIC */
-    .step-container {
-        background: rgba(17, 24, 39, 0.65);
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 14px;
-        padding: 24px;
-        margin-bottom: 24px;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
-        transition: all 0.3s ease;
-    }
-    
-    .step-container:hover {
-        border-color: rgba(59, 130, 246, 0.4);
-        box-shadow: 0 8px 32px rgba(59, 130, 246, 0.15);
+    /* ESTILO DE BORDES Y CONTENEDORES NATIVOS */
+    div[data-testid="stVerticalBlockBorderWrapper"] {
+        background: rgba(17, 24, 39, 0.65) !important;
+        backdrop-filter: blur(16px) !important;
+        -webkit-backdrop-filter: blur(16px) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        border-radius: 14px !important;
+        padding: 20px !important;
+        margin-bottom: 20px !important;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35) !important;
     }
 
     .container-title {
@@ -100,7 +94,7 @@ st.markdown("""
         letter-spacing: 0.8px;
         color: #3b82f6 !important;
         margin-top: 0 !important;
-        margin-bottom: 18px !important;
+        margin-bottom: 16px !important;
         text-align: left;
     }
 
@@ -119,58 +113,61 @@ st.markdown("""
         line-height: 1.7 !important;
     }
     
-    /* PESTAÑAS 100% ANCHO REPARTIDAS A PARTES IGUALES (20% CADA UNA) */
-    .stTabs [data-baseweb="tab-list"] {
+    /* PESTAÑAS 100% ANCHO REPARTIDAS A PARTES IGUALES EN EL ANCHO COMPLETO */
+    div[data-testid="stTabs"] [data-baseweb="tab-list"] {
         display: flex !important;
         width: 100% !important;
-        gap: 10px;
-        background-color: rgba(17, 24, 39, 0.6);
-        padding: 8px;
-        border-radius: 16px;
-        border: 1px solid rgba(255, 255, 255, 0.08);
+        gap: 10px !important;
+        background-color: rgba(17, 24, 39, 0.6) !important;
+        padding: 8px !important;
+        border-radius: 16px !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
     }
 
-    .stTabs [data-baseweb="tab"] {
+    div[data-testid="stTabs"] [data-baseweb="tab-list"] button {
         flex: 1 1 0% !important;
         width: 20% !important;
-        height: 52px;
-        border-radius: 12px;
-        color: #9ca3af;
-        font-weight: 700;
-        font-size: 14px;
-        font-family: 'Outfit', sans-serif;
-        text-transform: uppercase;
-        border: none;
+        min-width: 0 !important;
+        height: 50px !important;
+        border-radius: 12px !important;
+        color: #9ca3af !important;
+        font-weight: 700 !important;
+        font-size: 14px !important;
+        font-family: 'Outfit', sans-serif !important;
+        text-transform: uppercase !important;
+        border: none !important;
         text-align: center !important;
         justify-content: center !important;
         padding: 0 !important;
-        transition: all 0.25s ease;
+        transition: all 0.25s ease !important;
     }
 
-    .stTabs [aria-selected="true"] {
+    div[data-testid="stTabs"] [data-baseweb="tab-list"] button[aria-selected="true"] {
         background: linear-gradient(135deg, #3b82f6, #06b6d4) !important;
         color: #ffffff !important;
         box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4) !important;
     }
 
-    /* BOTONES PRIMARIOS */
+    /* BOTONES PRIMARIOS Y SECUNDARIOS */
     .stButton>button {
-        background: linear-gradient(135deg, #3b82f6, #06b6d4) !important;
-        color: #ffffff !important;
-        border: none !important;
-        padding: 14px 28px !important;
+        background: rgba(255, 255, 255, 0.05);
+        color: #9ca3af;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 12px 24px;
         font-family: 'Outfit', sans-serif;
-        font-size: 15px;
+        font-size: 14px;
         font-weight: 700;
         border-radius: 10px;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        transition: all 0.25s ease;
         width: 100%;
         text-transform: uppercase;
     }
-    .stButton>button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(6, 182, 212, 0.4);
+    
+    .btn-active>button {
+        background: linear-gradient(135deg, #3b82f6, #06b6d4) !important;
+        color: #ffffff !important;
+        border: none !important;
+        box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4) !important;
     }
 
     /* TABLA ESTILO REQUISITOS IMAGEN 008 */
@@ -346,7 +343,7 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# ----------------- 5 PESTAÑAS 100% ANCHO IGUALES (INTRO, CONVERTIR, ASISTENTE IA, REQUISITOS, AUTOR) -----------------
+# ----------------- 5 PESTAÑAS (INTRO, CONVERTIR, ASISTENTE IA, REQUISITOS, AUTOR) -----------------
 tab_home, tab_conv, tab_assistant, tab_settings, tab_author = st.tabs([
     "INTRO",
     "CONVERTIR",
@@ -359,287 +356,299 @@ tab_home, tab_conv, tab_assistant, tab_settings, tab_author = st.tabs([
 with tab_home:
     st.markdown("<h2 style='margin-top:0; font-size: 24px;'>Bienvenido a PDF to .MD</h2>", unsafe_allow_html=True)
     st.markdown("""
-    <p style='color: #cbd5e1; margin-bottom: 25px;'>Conversión inteligente y extracción local de documentos técnicos AECO a Markdown estructurado.</p>
+    <p style='color: #cbd5e1; margin-bottom: 20px;'>Conversión inteligente y extracción local de documentos técnicos AECO a Markdown estructurado.</p>
     """, unsafe_allow_html=True)
 
-    st.markdown("""
-    <div class="step-container">
-        <h4 class="container-title">¿QUÉ PUEDES HACER CON ESTA VERSIÓN?</h4>
-    """, unsafe_allow_html=True)
+    # CONTENEDOR 100% ENCAPSULADO CON NATIVE CONTAINER
+    with st.container(border=True):
+        st.markdown("<h4 class='container-title'>¿QUÉ PUEDES HACER CON ESTA VERSIÓN?</h4>", unsafe_allow_html=True)
+        c_feat1, c_feat2 = st.columns(2)
+        with c_feat1:
+            st.markdown("<div style='padding: 10px 0;'>📄 <strong>CONVERSIÓN INTELIGENTE DE PDFs AECO</strong></div>", unsafe_allow_html=True)
+            st.markdown("<div style='padding: 10px 0;'>🖼️ <strong>EXTRACCIÓN DE FOTOGRAFÍAS Y PLANOS</strong></div>", unsafe_allow_html=True)
+            st.markdown("<div style='padding: 10px 0;'>📊 <strong>RECONSTRUCCIÓN DE TABLAS Y EXCEL (.XLSX)</strong></div>", unsafe_allow_html=True)
+        with c_feat2:
+            st.markdown("<div style='padding: 10px 0;'>💎 <strong>EXPORTACIÓN PARA OBSIDIAN VAULT (.MD)</strong></div>", unsafe_allow_html=True)
+            st.markdown("<div style='padding: 10px 0;'>🌐 <strong>EXTRACTOR WEB (PÁGINAS URL A MARKDOWN)</strong></div>", unsafe_allow_html=True)
+            st.markdown("<div style='padding: 10px 0;'>💬 <strong>ASISTENTE IA OFFLINE Y DIAGNÓSTICO</strong></div>", unsafe_allow_html=True)
 
-    c_feat1, c_feat2 = st.columns(2)
-    with c_feat1:
-        st.markdown("<div style='padding: 8px 0;'>📄 <strong>CONVERSIÓN INTELIGENTE DE PDFs AECO</strong></div>", unsafe_allow_html=True)
-        st.markdown("<div style='padding: 8px 0;'>🖼️ <strong>EXTRACCIÓN DE FOTOGRAFÍAS Y PLANOS</strong></div>", unsafe_allow_html=True)
-        st.markdown("<div style='padding: 8px 0;'>📊 <strong>RECONSTRUCCIÓN DE TABLAS Y EXCEL (.XLSX)</strong></div>", unsafe_allow_html=True)
-    with c_feat2:
-        st.markdown("<div style='padding: 8px 0;'>💎 <strong>EXPORTACIÓN PARA OBSIDIAN VAULT (.MD)</strong></div>", unsafe_allow_html=True)
-        st.markdown("<div style='padding: 8px 0;'>🌐 <strong>EXTRACTOR WEB (PÁGINAS URL A MARKDOWN)</strong></div>", unsafe_allow_html=True)
-        st.markdown("<div style='padding: 8px 0;'>💬 <strong>ASISTENTE IA OFFLINE Y DIAGNÓSTICO</strong></div>", unsafe_allow_html=True)
-
-    st.markdown("</div>", unsafe_allow_html=True)
-
-    st.markdown("""
-    <div class="step-container" style="border-color: rgba(6, 182, 212, 0.4);">
-        <h4 class="container-title" style="color: #06b6d4 !important;">🚀 HERRAMIENTA EN DESARROLLO ACTIVO</h4>
-        <p style="margin-bottom: 0; color: #cbd5e1;">Desarrollada para la comunidad de la Arquitectura Técnica (<strong>COATAC</strong>). Procesamiento 100% privado y local sin envío de datos a la nube.</p>
-    </div>
-    """, unsafe_allow_html=True)
+    with st.container(border=True):
+        st.markdown("<h4 class='container-title' style='color: #06b6d4 !important;'>🚀 HERRAMIENTA EN DESARROLLO ACTIVO</h4>", unsafe_allow_html=True)
+        st.markdown("<p style='margin-bottom: 0; color: #cbd5e1;'>Desarrollada para la comunidad de la Arquitectura Técnica (<strong>COATAC</strong>). Procesamiento 100% privado y local sin envío de datos a la nube.</p>", unsafe_allow_html=True)
 
     col_c_btn1, col_c_btn2, col_c_btn3 = st.columns([1, 2, 1])
     with col_c_btn2:
+        st.markdown("<div class='btn-active'>", unsafe_allow_html=True)
         if st.button("🚀 COMENZAR A CONVERTIR DOCUMENTOS", key="btn_inicio_to_convert"):
-            st.info("💡 Por favor, haz clic en la pestaña **CONVERTIR** arriba para iniciar.")
+            st.info("💡 Por favor, haz clic arriba en la pestaña **CONVERTIR** para iniciar.")
+        st.markdown("</div>", unsafe_allow_html=True)
 
-# ================= 2. PESTAÑA CONVERTIR (CONTENEDORES STRICTOS) =================
+# ================= 2. PESTAÑA CONVERTIR (CONTENEDORES 100% NATIVOS) =================
 with tab_conv:
 
-    # CONTENEDOR 1: ORIGEN DE DATOS (TODO DENTRO DEL CONTENEDOR)
-    st.markdown("""
-    <div class="step-container">
-        <h4 class="container-title">ORIGEN DE DATOS</h4>
-    """, unsafe_allow_html=True)
+    # CONTENEDOR 1: ORIGEN DE DATOS (TODO DENTRO DEL MARCO)
+    with st.container(border=True):
+        st.markdown("<h4 class='container-title'>ORIGEN DE DATOS</h4>", unsafe_allow_html=True)
 
-    col_src1, col_src2, col_src3 = st.columns(3)
-    with col_src1:
-        if st.button("📁 PDF ARCHIVO", key="btn_src_pdf"):
-            st.session_state.src_choice = "PDF"
-    with col_src2:
-        if st.button("📂 CARPETA ARCHIVOS", key="btn_src_folder"):
-            st.session_state.src_choice = "CARPETA"
-    with col_src3:
-        if st.button("🌐 PÁGINA WEB", key="btn_src_web"):
-            st.session_state.src_choice = "WEB"
+        col_src1, col_src2, col_src3 = st.columns(3)
+        with col_src1:
+            if st.session_state.src_choice == "PDF": st.markdown("<div class='btn-active'>", unsafe_allow_html=True)
+            if st.button("📁 PDF ARCHIVO", key="btn_src_pdf"):
+                st.session_state.src_choice = "PDF"
+                st.rerun()
+            if st.session_state.src_choice == "PDF": st.markdown("</div>", unsafe_allow_html=True)
 
-    files_to_process = []
-    web_url_target = None
-    page_range_filter = None
+        with col_src2:
+            if st.session_state.src_choice == "CARPETA": st.markdown("<div class='btn-active'>", unsafe_allow_html=True)
+            if st.button("📂 CARPETA ARCHIVOS", key="btn_src_folder"):
+                st.session_state.src_choice = "CARPETA"
+                st.rerun()
+            if st.session_state.src_choice == "CARPETA": st.markdown("</div>", unsafe_allow_html=True)
 
-    st.markdown("<div style='margin-top: 15px;'>", unsafe_allow_html=True)
-    if st.session_state.src_choice == "PDF":
-        uploaded_files = st.file_uploader("Arrastra o selecciona tus archivos PDF:", type=["pdf"], accept_multiple_files=True)
-        if uploaded_files:
-            files_to_process = uploaded_files
-            st.success(f"✔️ {len(uploaded_files)} PDF(s) listo(s) para procesar.")
-        page_range_str = st.text_input("🔍 Convertir solo páginas específicas (Opcional):", placeholder="Ejemplo: 1-5, 10, 15-20")
-        page_range_filter = parse_page_range(page_range_str)
+        with col_src3:
+            if st.session_state.src_choice == "WEB": st.markdown("<div class='btn-active'>", unsafe_allow_html=True)
+            if st.button("🌐 PÁGINA WEB", key="btn_src_web"):
+                st.session_state.src_choice = "WEB"
+                st.rerun()
+            if st.session_state.src_choice == "WEB": st.markdown("</div>", unsafe_allow_html=True)
 
-    elif st.session_state.src_choice == "CARPETA":
-        folder_path = st.text_input("Ruta absoluta de la carpeta de PDFs:", placeholder="Ejemplo: C:\\Proyectos\\PDFs")
-        page_range_str = st.text_input("🔍 Convertir solo páginas específicas (Opcional):", placeholder="Ejemplo: 1-5, 10")
-        page_range_filter = parse_page_range(page_range_str)
-        if folder_path and os.path.isdir(folder_path):
-            pdf_files = [f for f in os.listdir(folder_path) if f.lower().endswith(".pdf")]
-            if pdf_files:
-                st.success(f"✔️ Se encontraron {len(pdf_files)} archivos PDF.")
-                for f in pdf_files:
-                    fp = os.path.join(folder_path, f)
-                    files_to_process.append({"name": f, "path": fp})
+        files_to_process = []
+        web_url_target = None
+        page_range_filter = None
 
-    elif st.session_state.src_choice == "WEB":
-        web_url_target = st.text_input("Dirección Web (URL):", placeholder="https://ejemplo.com/articulo-tecnico")
+        st.write("")
+        if st.session_state.src_choice == "PDF":
+            uploaded_files = st.file_uploader("Arrastra o selecciona tus archivos PDF:", type=["pdf"], accept_multiple_files=True)
+            if uploaded_files:
+                files_to_process = uploaded_files
+                st.success(f"✔️ {len(uploaded_files)} PDF(s) listo(s) para procesar.")
+            page_range_str = st.text_input("🔍 Convertir solo páginas específicas (Opcional):", placeholder="Ejemplo: 1-5, 10, 15-20")
+            page_range_filter = parse_page_range(page_range_str)
 
-    st.markdown("</div></div>", unsafe_allow_html=True)
+        elif st.session_state.src_choice == "CARPETA":
+            folder_path = st.text_input("Ruta absoluta de la carpeta de PDFs:", placeholder="Ejemplo: C:\\Proyectos\\PDFs")
+            page_range_str = st.text_input("🔍 Convertir solo páginas específicas (Opcional):", placeholder="Ejemplo: 1-5, 10")
+            page_range_filter = parse_page_range(page_range_str)
+            if folder_path and os.path.isdir(folder_path):
+                pdf_files = [f for f in os.listdir(folder_path) if f.lower().endswith(".pdf")]
+                if pdf_files:
+                    st.success(f"✔️ Se encontraron {len(pdf_files)} archivos PDF.")
+                    for f in pdf_files:
+                        fp = os.path.join(folder_path, f)
+                        files_to_process.append({"name": f, "path": fp})
 
-    # CONTENEDOR 2: TIPO DE EXTRACCIÓN (TODO DENTRO DEL CONTENEDOR)
-    st.markdown("""
-    <div class="step-container">
-        <h4 class="container-title">TIPO DE EXTRACCIÓN</h4>
-    """, unsafe_allow_html=True)
+        elif st.session_state.src_choice == "WEB":
+            web_url_target = st.text_input("Dirección Web (URL):", placeholder="https://ejemplo.com/articulo-tecnico")
 
-    col_ext1, col_ext2, col_ext3, col_ext4 = st.columns(4)
-    with col_ext1:
-        if st.button("⚡ RÁPIDO", key="btn_ext_rapido"):
-            st.session_state.ext_choice = "RÁPIDO"
-    with col_ext2:
-        if st.button("🖼️ GRÁFICO", key="btn_ext_grafico"):
-            st.session_state.ext_choice = "GRÁFICO"
-    with col_ext3:
-        if st.button("🏗️ TÉCNICO", key="btn_ext_tecnico"):
-            st.session_state.ext_choice = "TÉCNICO"
-    with col_ext4:
-        if st.button("🧮 COMPLETO", key="btn_ext_completo"):
-            st.session_state.ext_choice = "COMPLETO"
+    # CONTENEDOR 2: TIPO DE EXTRACCIÓN (TODO DENTRO DEL MARCO)
+    with st.container(border=True):
+        st.markdown("<h4 class='container-title'>TIPO DE EXTRACCIÓN</h4>", unsafe_allow_html=True)
 
-    disable_img_ext = False
-    force_ocr_flag = False
+        col_ext1, col_ext2, col_ext3, col_ext4 = st.columns(4)
+        with col_ext1:
+            if st.session_state.ext_choice == "RÁPIDO": st.markdown("<div class='btn-active'>", unsafe_allow_html=True)
+            if st.button("⚡ RÁPIDO", key="btn_ext_rapido"):
+                st.session_state.ext_choice = "RÁPIDO"
+                st.rerun()
+            if st.session_state.ext_choice == "RÁPIDO": st.markdown("</div>", unsafe_allow_html=True)
 
-    st.markdown("<div style='margin-top: 15px;'>", unsafe_allow_html=True)
-    if st.session_state.ext_choice == "RÁPIDO":
-        disable_img_ext = True
-        st.info("💡 **Modo Rápido:** Extrae únicamente el texto principal sin procesar imágenes para mayor velocidad.")
-    elif st.session_state.ext_choice == "GRÁFICO":
+        with col_ext2:
+            if st.session_state.ext_choice == "GRÁFICO": st.markdown("<div class='btn-active'>", unsafe_allow_html=True)
+            if st.button("🖼️ GRÁFICO", key="btn_ext_grafico"):
+                st.session_state.ext_choice = "GRÁFICO"
+                st.rerun()
+            if st.session_state.ext_choice == "GRÁFICO": st.markdown("</div>", unsafe_allow_html=True)
+
+        with col_ext3:
+            if st.session_state.ext_choice == "TÉCNICO": st.markdown("<div class='btn-active'>", unsafe_allow_html=True)
+            if st.button("🏗️ TÉCNICO", key="btn_ext_tecnico"):
+                st.session_state.ext_choice = "TÉCNICO"
+                st.rerun()
+            if st.session_state.ext_choice == "TÉCNICO": st.markdown("</div>", unsafe_allow_html=True)
+
+        with col_ext4:
+            if st.session_state.ext_choice == "COMPLETO": st.markdown("<div class='btn-active'>", unsafe_allow_html=True)
+            if st.button("🧮 COMPLETO", key="btn_ext_completo"):
+                st.session_state.ext_choice = "COMPLETO"
+                st.rerun()
+            if st.session_state.ext_choice == "COMPLETO": st.markdown("</div>", unsafe_allow_html=True)
+
         disable_img_ext = False
-        st.info("💡 **Modo Gráfico:** Extrae texto e imágenes incrustadas en alta calidad.")
-    elif st.session_state.ext_choice == "TÉCNICO":
-        disable_img_ext = False
-        st.info("💡 **Modo Técnico:** Procesa texto, imágenes, tablas de mediciones y planos AECO.")
-    elif st.session_state.ext_choice == "COMPLETO":
-        disable_img_ext = False
-        force_ocr_flag = True
-        st.info("💡 **Modo Completo:** Fuerza OCR en escaneos y ecuaciones matemáticas + texto, imágenes, tablas y planos.")
+        force_ocr_flag = False
 
-    st.markdown("</div></div>", unsafe_allow_html=True)
+        st.write("")
+        if st.session_state.ext_choice == "RÁPIDO":
+            disable_img_ext = True
+            st.info("💡 **Modo Rápido:** Extrae únicamente el texto principal sin procesar imágenes para mayor velocidad.")
+        elif st.session_state.ext_choice == "GRÁFICO":
+            disable_img_ext = False
+            st.info("💡 **Modo Gráfico:** Extrae texto e imágenes incrustadas en alta calidad.")
+        elif st.session_state.ext_choice == "TÉCNICO":
+            disable_img_ext = False
+            st.info("💡 **Modo Técnico:** Procesa texto, imágenes, tablas de mediciones y planos AECO.")
+        elif st.session_state.ext_choice == "COMPLETO":
+            disable_img_ext = False
+            force_ocr_flag = True
+            st.info("💡 **Modo Completo:** Fuerza OCR en escaneos y ecuaciones matemáticas + texto, imágenes, tablas y planos.")
 
     # CONTENEDOR 3: EXPORTACIÓN Y PROCESAMIENTO (EXPORTACIÓN OBLIGATORIA EN ORDENADOR)
-    st.markdown("""
-    <div class="step-container">
-        <h4 class="container-title">EXPORTACIÓN Y PROCESAMIENTO</h4>
-    """, unsafe_allow_html=True)
+    with st.container(border=True):
+        st.markdown("<h4 class='container-title'>EXPORTACIÓN Y PROCESAMIENTO</h4>", unsafe_allow_html=True)
 
-    custom_output_folder = st.text_input(
-        "📂 Seleccionar Carpeta de Destino en el ordenador (Obligatorio):",
-        placeholder="Ejemplo: C:\\Users\\Jose\\Desktop\\Documentos_Exportados",
-        key="mandatory_output_folder"
-    )
-
-    def convert_url_to_md(url, extract_images=True):
-        if not WEB_EXTRACTOR_AVAILABLE:
-            import urllib.request
-            req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
-            with urllib.request.urlopen(req) as response:
-                html_content = response.read().decode('utf-8', errors='ignore')
-            title_match = re.search(r'<title>(.*?)</title>', html_content, re.IGNORECASE)
-            title = title_match.group(1) if title_match else "Pagina_Web"
-            text = re.sub(r'<.*?>', '', html_content)
-            return title, text.strip(), {}
-
-        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'}
-        resp = requests.get(url, headers=headers, timeout=15)
-        soup = BeautifulSoup(resp.text, 'html.parser')
-        page_title = soup.title.string.strip() if soup.title and soup.title.string else "Pagina_Web"
-        
-        for element in soup(["script", "style", "nav", "footer", "iframe", "noscript"]):
-            element.extract()
-
-        h2t = html2text.HTML2Text()
-        h2t.ignore_links = False
-        h2t.ignore_images = not extract_images
-        h2t.ignore_tables = False
-        markdown_body = h2t.handle(str(soup))
-        
-        extracted_images = {}
-        if extract_images:
-            img_tags = soup.find_all('img')
-            for i, img in enumerate(img_tags[:10]):
-                src = img.get('src')
-                if src:
-                    full_img_url = urllib.parse.urljoin(url, src)
-                    try:
-                        img_resp = requests.get(full_img_url, headers=headers, timeout=5)
-                        if img_resp.status_code == 200:
-                            from PIL import Image
-                            pil_img = Image.open(io.BytesIO(img_resp.content))
-                            extracted_images[f"image_{i+1}.png"] = pil_img
-                    except Exception:
-                        pass
-                        
-        return page_title, markdown_body, extracted_images
-
-    @st.cache_resource
-    def get_converter(disable_img_ext, lang, force_ocr):
-        from marker.models import create_model_dict
-        from marker.converters.pdf import PdfConverter
-        from marker.config.parser import ConfigParser
-
-        config_dict = {
-            "output_format": "markdown",
-            "disable_image_extraction": disable_img_ext,
-            "force_ocr": force_ocr
-        }
-        if lang: config_dict["languages"] = lang
-
-        config_parser = ConfigParser(config_dict)
-        artifact_dict = create_model_dict()
-        return PdfConverter(
-            config=config_parser.generate_config_dict(),
-            artifact_dict=artifact_dict,
-            processor_list=config_parser.get_processors(),
-            renderer=config_parser.get_renderer()
+        custom_output_folder = st.text_input(
+            "📂 Seleccionar Carpeta de Destino en el ordenador (Obligatorio):",
+            placeholder="Ejemplo: C:\\Users\\Jose\\Desktop\\Documentos_Exportados",
+            key="mandatory_output_folder_v2"
         )
 
-    has_valid_source = (files_to_process and len(files_to_process) > 0) or (st.session_state.src_choice == "WEB" and web_url_target)
-    has_valid_destination = custom_output_folder and os.path.exists(custom_output_folder)
+        def convert_url_to_md(url, extract_images=True):
+            if not WEB_EXTRACTOR_AVAILABLE:
+                import urllib.request
+                req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+                with urllib.request.urlopen(req) as response:
+                    html_content = response.read().decode('utf-8', errors='ignore')
+                title_match = re.search(r'<title>(.*?)</title>', html_content, re.IGNORECASE)
+                title = title_match.group(1) if title_match else "Pagina_Web"
+                text = re.sub(r'<.*?>', '', html_content)
+                return title, text.strip(), {}
 
-    if not has_valid_destination and has_valid_source:
-        st.warning("⚠️ Debes indicar una Carpeta de Destino válida en tu ordenador para exportar los archivos.")
+            headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'}
+            resp = requests.get(url, headers=headers, timeout=15)
+            soup = BeautifulSoup(resp.text, 'html.parser')
+            page_title = soup.title.string.strip() if soup.title and soup.title.string else "Pagina_Web"
+            
+            for element in soup(["script", "style", "nav", "footer", "iframe", "noscript"]):
+                element.extract()
 
-    if st.button("🚀 EXPORTAR Y PROCESAR DOCUMENTOS", key="btn_run_export_strict", disabled=not (has_valid_source and has_valid_destination)):
-        progress_bar = st.progress(0)
-        status_box = st.empty()
-        start_time = time.time()
-        converted_results = []
+            h2t = html2text.HTML2Text()
+            h2t.ignore_links = False
+            h2t.ignore_images = not extract_images
+            h2t.ignore_tables = False
+            markdown_body = h2t.handle(str(soup))
+            
+            extracted_images = {}
+            if extract_images:
+                img_tags = soup.find_all('img')
+                for i, img in enumerate(img_tags[:10]):
+                    src = img.get('src')
+                    if src:
+                        full_img_url = urllib.parse.urljoin(url, src)
+                        try:
+                            img_resp = requests.get(full_img_url, headers=headers, timeout=5)
+                            if img_resp.status_code == 200:
+                                from PIL import Image
+                                pil_img = Image.open(io.BytesIO(img_resp.content))
+                                extracted_images[f"image_{i+1}.png"] = pil_img
+                        except Exception:
+                            pass
+                            
+            return page_title, markdown_body, extracted_images
 
-        if st.session_state.src_choice == "WEB":
-            progress_bar.progress(25)
-            status_box.info(f"🌐 Extrayendo URL Web: {web_url_target}")
-            try:
-                title, md_content, web_imgs = convert_url_to_md(web_url_target, extract_images=not disable_img_ext)
-                progress_bar.progress(75)
-                status_box.info("📝 Formateando Markdown...")
-                converted_results.append({
-                    "name": f"{re.sub(r'[^a-zA-Z0-9_-]', '_', title)[:30]}.md",
-                    "markdown": md_content,
-                    "images": web_imgs
-                })
-            except Exception as e:
-                st.error(f"Error procesando URL: {e}")
-        else:
-            try:
-                converter = get_converter(disable_img_ext, st.session_state.default_lang, force_ocr_flag)
-                total_files = len(files_to_process)
+        @st.cache_resource
+        def get_converter(disable_img_ext, lang, force_ocr):
+            from marker.models import create_model_dict
+            from marker.converters.pdf import PdfConverter
+            from marker.config.parser import ConfigParser
 
-                for idx, file_item in enumerate(files_to_process):
-                    file_name = file_item.name if st.session_state.src_choice == "PDF" else file_item["name"]
-                    p_val = int(((idx + 0.4) / total_files) * 100)
-                    progress_bar.progress(min(p_val, 90))
-                    status_box.info(f"⏳ Procesando documento {idx+1}/{total_files}: {file_name}")
+            config_dict = {
+                "output_format": "markdown",
+                "disable_image_extraction": disable_img_ext,
+                "force_ocr": force_ocr
+            }
+            if lang: config_dict["languages"] = lang
 
-                    if st.session_state.src_choice == "PDF":
-                        with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp_file:
-                            tmp_file.write(file_item.read())
-                            input_path = tmp_file.name
-                    else:
-                        input_path = file_item["path"]
+            config_parser = ConfigParser(config_dict)
+            artifact_dict = create_model_dict()
+            return PdfConverter(
+                config=config_parser.generate_config_dict(),
+                artifact_dict=artifact_dict,
+                processor_list=config_parser.get_processors(),
+                renderer=config_parser.get_renderer()
+            )
 
-                    rendered = converter(input_path, page_range=page_range_filter) if page_range_filter else converter(input_path)
-                    from marker.output import text_from_rendered
-                    markdown_text, _, extracted_images = text_from_rendered(rendered)
+        has_valid_source = (files_to_process and len(files_to_process) > 0) or (st.session_state.src_choice == "WEB" and web_url_target)
+        has_valid_destination = custom_output_folder and os.path.exists(custom_output_folder)
 
+        if not has_valid_destination and has_valid_source:
+            st.warning("⚠️ Debes indicar una Carpeta de Destino válida en tu ordenador para exportar los archivos.")
+
+        st.markdown("<div class='btn-active'>", unsafe_allow_html=True)
+        btn_go = st.button("🚀 EXPORTAR Y PROCESAR DOCUMENTOS", key="btn_run_export_final_v2", disabled=not (has_valid_source and has_valid_destination))
+        st.markdown("</div>", unsafe_allow_html=True)
+
+        if btn_go:
+            progress_bar = st.progress(0)
+            status_box = st.empty()
+            start_time = time.time()
+            converted_results = []
+
+            if st.session_state.src_choice == "WEB":
+                progress_bar.progress(25)
+                status_box.info(f"🌐 Extrayendo URL Web: {web_url_target}")
+                try:
+                    title, md_content, web_imgs = convert_url_to_md(web_url_target, extract_images=not disable_img_ext)
+                    progress_bar.progress(75)
+                    status_box.info("📝 Formateando Markdown...")
                     converted_results.append({
-                        "name": file_name,
-                        "markdown": markdown_text,
-                        "images": extracted_images
+                        "name": f"{re.sub(r'[^a-zA-Z0-9_-]', '_', title)[:30]}.md",
+                        "markdown": md_content,
+                        "images": web_imgs
                     })
+                except Exception as e:
+                    st.error(f"Error procesando URL: {e}")
+            else:
+                try:
+                    converter = get_converter(disable_img_ext, st.session_state.default_lang, force_ocr_flag)
+                    total_files = len(files_to_process)
 
-                    if st.session_state.src_choice == "PDF":
-                        try: os.unlink(input_path)
-                        except Exception: pass
+                    for idx, file_item in enumerate(files_to_process):
+                        file_name = file_item.name if st.session_state.src_choice == "PDF" else file_item["name"]
+                        p_val = int(((idx + 0.4) / total_files) * 100)
+                        progress_bar.progress(min(p_val, 90))
+                        status_box.info(f"⏳ Procesando documento {idx+1}/{total_files}: {file_name}")
 
-            except Exception as e:
-                st.error("Error durante el procesamiento:")
-                st.code(str(e))
+                        if st.session_state.src_choice == "PDF":
+                            with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp_file:
+                                tmp_file.write(file_item.read())
+                                input_path = tmp_file.name
+                        else:
+                            input_path = file_item["path"]
 
-        progress_bar.progress(100)
-        elapsed_time = time.time() - start_time
-        status_box.success(f"✔️ Procesamiento y exportación completados en {elapsed_time:.1f} segundos.")
+                        rendered = converter(input_path, page_range=page_range_filter) if page_range_filter else converter(input_path)
+                        from marker.output import text_from_rendered
+                        markdown_text, _, extracted_images = text_from_rendered(rendered)
 
-        if converted_results:
-            st.session_state.last_results = converted_results
-            try:
-                for res in converted_results:
-                    out_p = os.path.join(custom_output_folder, res["name"].replace(".pdf", "") + ".md")
-                    with open(out_p, "w", encoding="utf-8") as f:
-                        f.write(res["markdown"])
-                    # Exportar también versión Obsidian
-                    obs_p = os.path.join(custom_output_folder, "OBSIDIAN_" + res["name"].replace(".pdf", "") + ".md")
-                    with open(obs_p, "w", encoding="utf-8") as f:
-                        f.write(format_for_obsidian(res["markdown"], res["name"]))
-                st.success(f"📂 Archivos Markdown y formato Obsidian guardados en: `{custom_output_folder}`")
-            except Exception as ex:
-                st.error(f"Error al guardar en carpeta: {ex}")
+                        converted_results.append({
+                            "name": file_name,
+                            "markdown": markdown_text,
+                            "images": extracted_images
+                        })
 
-    st.markdown("</div>", unsafe_allow_html=True)
+                        if st.session_state.src_choice == "PDF":
+                            try: os.unlink(input_path)
+                            except Exception: pass
+
+                except Exception as e:
+                    st.error("Error durante el procesamiento:")
+                    st.code(str(e))
+
+            progress_bar.progress(100)
+            elapsed_time = time.time() - start_time
+            status_box.success(f"✔️ Procesamiento y exportación completados en {elapsed_time:.1f} segundos.")
+
+            if converted_results:
+                st.session_state.last_results = converted_results
+                try:
+                    for res in converted_results:
+                        out_p = os.path.join(custom_output_folder, res["name"].replace(".pdf", "") + ".md")
+                        with open(out_p, "w", encoding="utf-8") as f:
+                            f.write(res["markdown"])
+                        obs_p = os.path.join(custom_output_folder, "OBSIDIAN_" + res["name"].replace(".pdf", "") + ".md")
+                        with open(obs_p, "w", encoding="utf-8") as f:
+                            f.write(format_for_obsidian(res["markdown"], res["name"]))
+                    st.success(f"📂 Archivos Markdown y formato Obsidian guardados en: `{custom_output_folder}`")
+                except Exception as ex:
+                    st.error(f"Error al guardar en carpeta: {ex}")
 
     # INSPECTOR DE RESULTADOS Y EXPORTACIONES ESPECÍFICAS
     if st.session_state.last_results:
@@ -677,9 +686,8 @@ with tab_conv:
         first_md = converted_results[0].get("markdown", "")
 
         with insp_tab1:
-            st.markdown("<div class='step-container' style='max-height: 380px; overflow-y: auto;'>", unsafe_allow_html=True)
-            st.markdown(first_md, unsafe_allow_html=True)
-            st.markdown("</div>", unsafe_allow_html=True)
+            with st.container(border=True):
+                st.markdown(first_md, unsafe_allow_html=True)
         with insp_tab2:
             st.code(first_md, language="markdown")
 
@@ -691,7 +699,8 @@ with tab_assistant:
     else:
         doc_text = st.session_state.last_results[0].get("markdown", "")
         doc_name = st.session_state.last_results[0].get("name", "Documento")
-        st.markdown(f"<div class='step-container'>📄 <strong>Documento Activo:</strong> <code>{doc_name}</code> ({len(doc_text.split())} palabras)</div>", unsafe_allow_html=True)
+        with st.container(border=True):
+            st.markdown(f"📄 <strong>Documento Activo:</strong> <code>{doc_name}</code> ({len(doc_text.split())} palabras)", unsafe_allow_html=True)
         
         user_query = st.text_input("Introduce tu término o pregunta sobre el documento:", placeholder="Ejemplo: Resumen de pliegos, mediciones o normativa")
         if user_query:
@@ -704,7 +713,7 @@ with tab_assistant:
             else:
                 st.warning("No se encontraron coincidencias con los términos de búsqueda.")
 
-# ================= 4. PESTAÑA REQUISITOS (REPLICADA DE IMAGEN 008_REQUISITOS_Y_TEST.png) =================
+# ================= 4. PESTAÑA REQUISITOS (REPLICADA EXACTAMENTE DE IMAGEN 008_REQUISITOS_Y_TEST.png) =================
 with tab_settings:
     # 1. ESTADO DEL ACELERADOR GRÁFICO (CUDA)
     st.markdown("<h4>🟦 ESTADO DEL ACELERADOR GRÁFICO (CUDA)</h4>", unsafe_allow_html=True)
@@ -713,6 +722,8 @@ with tab_settings:
     vram_alloc = f"{torch.cuda.memory_allocated(0)/(1024**2):.1f} MB" if cuda_avail else "N/A"
     vram_res = f"{torch.cuda.memory_reserved(0)/(1024**2):.1f} MB" if cuda_avail else "N/A"
     
+    cuda_badge_html = "<span style='color:#4ade80; font-weight:bold;'>🟢 ACTIVA (Acelerada por GPU)</span>" if cuda_avail else "<span style='color:#ef4444; font-weight:bold;'>🔴 INACTIVA</span>"
+
     st.markdown(f"""
     <table class="req-table">
         <thead>
@@ -724,7 +735,7 @@ with tab_settings:
         <tbody>
             <tr>
                 <td><strong>Aceleración CUDA</strong></td>
-                <td><span style="color:#4ade80;">🟢 ACTIVA (Acelerada por GPU)</span> if {str(cuda_avail).lower()} else <span style="color:#ef4444;">🔴 INACTIVA</span></td>
+                <td>{cuda_badge_html}</td>
             </tr>
             <tr>
                 <td><strong>Modelo de Gráfica</strong></td>
@@ -743,14 +754,14 @@ with tab_settings:
     """, unsafe_allow_html=True)
 
     st.write("")
-    # 2. DIAGNÓSTICO DEL SISTEMA
-    st.markdown("<h4>🟦 DIAGNÓSTICO DEL SISTEMA</h4>", unsafe_allow_html=True)
-    st.markdown("<p style='color: #cbd5e1; margin-bottom: 12px;'>Verifica la compatibilidad de tu máquina para una ejecución fluida.</p>", unsafe_allow_html=True)
-    
-    col_diag1, col_diag2, col_diag3 = st.columns([1, 2, 1])
-    with col_diag2:
-        if st.button("🔍 CHEQUEAR REQUISITOS DEL SISTEMA", key="btn_check_reqs"):
+
+    # 2. DIAGNÓSTICO DEL SISTEMA (BOTÓN CENTRADO ÚNICAMENTE)
+    col_d_center1, col_d_center2, col_d_center3 = st.columns([1, 2, 1])
+    with col_d_center2:
+        st.markdown("<div class='btn-active'>", unsafe_allow_html=True)
+        if st.button("🔍 CHEQUEAR REQUISITOS DEL SISTEMA", key="btn_check_reqs_v2"):
             st.success(f"✔️ Sistema verificado: Python {sys.version.split()[0]} | CUDA GPU: {gpu_name}")
+        st.markdown("</div>", unsafe_allow_html=True)
 
     st.write("")
     st.divider()
