@@ -427,7 +427,7 @@ with tab_home:
     """, unsafe_allow_html=True)
 
     # BOTÓN CONVERTIR QUE NAVEGA DIRECTAMENTE Y OCUPA EL 100% DEL ANCHO
-    if st.button("🚀 CONVERTIR", key="btn_inicio_to_convert_v8", type="primary", use_container_width=True):
+    if st.button("🚀 CONVERTIR", key="btn_inicio_to_convert_v9", type="primary", use_container_width=True):
         st.session_state.switch_to_convert = True
         st.rerun()
 
@@ -441,7 +441,7 @@ with tab_conv:
         col_src1, col_src2, col_src3 = st.columns(3)
         with col_src1:
             pdf_type = "primary" if st.session_state.src_choice == "PDF" else "secondary"
-            if st.button("📁 PDF ARCHIVO", key="btn_src_pdf_v8", type=pdf_type, use_container_width=True):
+            if st.button("📁 PDF ARCHIVO", key="btn_src_pdf_v9", type=pdf_type, use_container_width=True):
                 st.session_state.src_choice = "PDF"
                 st.rerun()
 
@@ -449,7 +449,7 @@ with tab_conv:
             is_folder_active = (st.session_state.src_choice == "CARPETA" or bool(st.session_state.source_folder_path))
             folder_type = "primary" if is_folder_active else "secondary"
             folder_label = "📂 CARPETA" if not st.session_state.source_folder_path else f"✔️ CARPETA ({os.path.basename(st.session_state.source_folder_path)})"
-            if st.button(folder_label, key="btn_src_folder_v8", type=folder_type, use_container_width=True):
+            if st.button(folder_label, key="btn_src_folder_v9", type=folder_type, use_container_width=True):
                 st.session_state.src_choice = "CARPETA"
                 chosen_f = select_folder_dialog("Seleccionar Carpeta de Origen con PDFs")
                 if chosen_f:
@@ -458,7 +458,7 @@ with tab_conv:
 
         with col_src3:
             web_type = "primary" if st.session_state.src_choice == "WEB" else "secondary"
-            if st.button("🌐 PÁGINA WEB", key="btn_src_web_v8", type=web_type, use_container_width=True):
+            if st.button("🌐 PÁGINA WEB", key="btn_src_web_v9", type=web_type, use_container_width=True):
                 st.session_state.src_choice = "WEB"
                 st.rerun()
 
@@ -468,7 +468,7 @@ with tab_conv:
 
         st.write("")
         if st.session_state.src_choice == "PDF":
-            # PDF ARCHIVO: ACEPTA ÚNICAMENTE UN ÚNICO ARCHIVO PDF (accept_multiple_files=False)
+            # PDF ARCHIVO: SELECCIÓN ÚNICA DE 1 SOLO ARCHIVO PDF
             uploaded_file = st.file_uploader(label="", type=["pdf"], accept_multiple_files=False, label_visibility="collapsed")
             if uploaded_file:
                 files_to_process = [uploaded_file]
@@ -477,8 +477,8 @@ with tab_conv:
             page_range_filter = parse_page_range(page_range_str)
 
         elif st.session_state.src_choice == "CARPETA":
-            # MODO CARPETA COMPLETA
-            src_path_input = st.text_input("Introduce o confirma la Ruta de la carpeta en tu ordenador:", value=st.session_state.source_folder_path, placeholder="Ejemplo: C:\\Users\\Jose\\Desktop\\Mis_PDFs")
+            # MODO CARPETA COMPLETA: LÍNEA ÚNICA PARA PONER LA DIRECCIÓN DE LA CARPETA DONDE BUSCAR
+            src_path_input = st.text_input("Dirección de la carpeta donde buscar los archivos:", value=st.session_state.source_folder_path, placeholder="Ejemplo: C:\\Proyectos\\PDFs")
             if src_path_input != st.session_state.source_folder_path:
                 st.session_state.source_folder_path = src_path_input
                 st.rerun()
@@ -508,25 +508,25 @@ with tab_conv:
         col_ext1, col_ext2, col_ext3, col_ext4 = st.columns(4)
         with col_ext1:
             t_rap = "primary" if st.session_state.ext_choice == "RÁPIDO" else "secondary"
-            if st.button("⚡ RÁPIDO", key="btn_ext_rapido_v8", type=t_rap, use_container_width=True):
+            if st.button("⚡ RÁPIDO", key="btn_ext_rapido_v9", type=t_rap, use_container_width=True):
                 st.session_state.ext_choice = "RÁPIDO"
                 st.rerun()
 
         with col_ext2:
             t_graf = "primary" if st.session_state.ext_choice == "GRÁFICO" else "secondary"
-            if st.button("🖼️ GRÁFICO", key="btn_ext_grafico_v8", type=t_graf, use_container_width=True):
+            if st.button("🖼️ GRÁFICO", key="btn_ext_grafico_v9", type=t_graf, use_container_width=True):
                 st.session_state.ext_choice = "GRÁFICO"
                 st.rerun()
 
         with col_ext3:
             t_tec = "primary" if st.session_state.ext_choice == "TÉCNICO" else "secondary"
-            if st.button("🏗️ TÉCNICO", key="btn_ext_tecnico_v8", type=t_tec, use_container_width=True):
+            if st.button("🏗️ TÉCNICO", key="btn_ext_tecnico_v9", type=t_tec, use_container_width=True):
                 st.session_state.ext_choice = "TÉCNICO"
                 st.rerun()
 
         with col_ext4:
             t_comp = "primary" if st.session_state.ext_choice == "COMPLETO" else "secondary"
-            if st.button("🧮 COMPLETO", key="btn_ext_completo_v8", type=t_comp, use_container_width=True):
+            if st.button("🧮 COMPLETO", key="btn_ext_completo_v9", type=t_comp, use_container_width=True):
                 st.session_state.ext_choice = "COMPLETO"
                 st.rerun()
 
@@ -548,7 +548,7 @@ with tab_conv:
             force_ocr_flag = True
             st.info("💡 **Modo Completo:** Fuerza OCR en escaneos y ecuaciones matemáticas + texto, imágenes, tablas y planos.")
 
-    # CONTENEDOR 3: EXPORTACIÓN Y PROCESAMIENTO
+    # CONTENEDOR 3: EXPORTACIÓN Y PROCESAMIENTO (RESTAURADO DISEÑO ORIGINAL LIMPIO)
     with st.container(border=True):
         st.markdown("<h4 class='container-title'>EXPORTACIÓN Y PROCESAMIENTO</h4>", unsafe_allow_html=True)
 
@@ -556,31 +556,16 @@ with tab_conv:
         dest_btn_type = "primary" if is_dest_valid else "secondary"
         dest_btn_label = "📂 CARPETA DESTINO" if not st.session_state.dest_folder_path else f"✔️ CARPETA DESTINO ({os.path.basename(st.session_state.dest_folder_path)})"
 
-        if st.button(dest_btn_label, key="btn_browse_dest_folder_v8", type=dest_btn_type, use_container_width=True):
+        if st.button(dest_btn_label, key="btn_browse_dest_folder_v9", type=dest_btn_type, use_container_width=True):
             chosen_dest = select_folder_dialog("Seleccionar Carpeta de Destino para Guardar")
             if chosen_dest:
                 st.session_state.dest_folder_path = chosen_dest
                 st.rerun()
 
-        dest_path_input = st.text_input("Ruta de la carpeta de Destino en tu ordenador:", value=st.session_state.dest_folder_path, placeholder="Ejemplo: C:\\Users\\Jose\\Desktop\\PDF_TO_MD_EXPORTADOS")
-        if dest_path_input != st.session_state.dest_folder_path:
-            st.session_state.dest_folder_path = dest_path_input
-            st.rerun()
-
-        if not os.path.exists(st.session_state.dest_folder_path) and st.session_state.dest_folder_path:
-            col_mk1, col_mk2 = st.columns([2, 1])
-            with col_mk1:
-                st.warning(f"⚠️ La carpeta `{st.session_state.dest_folder_path}` aún no existe.")
-            with col_mk2:
-                if st.button("📁 CREAR CARPETA AHORA", key="btn_create_dest_dir_v8", type="primary", use_container_width=True):
-                    try:
-                        os.makedirs(st.session_state.dest_folder_path, exist_ok=True)
-                        st.success("✔️ Carpeta creada correctamente.")
-                        st.rerun()
-                    except Exception as ex:
-                        st.error(f"Error al crear carpeta: {ex}")
-        else:
-            st.success(f"📂 Carpeta de Destino lista para recibir los archivos: `{st.session_state.dest_folder_path}`")
+        if is_dest_valid:
+            st.success(f"📂 Carpeta de Destino seleccionada: `{st.session_state.dest_folder_path}`")
+        elif st.session_state.dest_folder_path:
+            st.warning(f"⚠️ La carpeta `{st.session_state.dest_folder_path}` no existe actualmente.")
 
         def convert_url_to_md(url, extract_images=True):
             if not WEB_EXTRACTOR_AVAILABLE:
@@ -651,11 +636,11 @@ with tab_conv:
         has_valid_destination = st.session_state.dest_folder_path and os.path.exists(st.session_state.dest_folder_path)
 
         if not has_valid_destination and has_valid_source:
-            st.warning("⚠️ Comprueba que la Carpeta de Destino exista para habilitar la exportación.")
+            st.warning("⚠️ Selecciona una Carpeta de Destino válida en tu ordenador para exportar.")
 
         st.write("")
         # BOTÓN PROCESAR OCUPANDO EL 100% DEL ANCHO
-        btn_go = st.button("🚀 EXPORTAR Y PROCESAR DOCUMENTOS", key="btn_run_export_final_v8", type="primary", disabled=not (has_valid_source and has_valid_destination), use_container_width=True)
+        btn_go = st.button("🚀 EXPORTAR Y PROCESAR DOCUMENTOS", key="btn_run_export_final_v9", type="primary", disabled=not (has_valid_source and has_valid_destination), use_container_width=True)
 
         if btn_go:
             progress_bar = st.progress(0)
@@ -804,7 +789,7 @@ with tab_settings:
     vram_alloc = f"{torch.cuda.memory_allocated(0)/(1024**2):.1f} MB" if cuda_avail else "N/A"
     vram_res = f"{torch.cuda.memory_reserved(0)/(1024**2):.1f} MB" if cuda_avail else "N/A"
     
-    cuda_badge_html = "<span style='color:#4ade80; font-weight:bold;'>🟢 ACTIVA (Acelerada por GPU)</span>" if cuda_avail else "<span style='color:#ef4444; font-warning:bold;'>🔴 INACTIVA</span>"
+    cuda_badge_html = "<span style='color:#4ade80; font-weight:bold;'>🟢 ACTIVA (Acelerada por GPU)</span>" if cuda_avail else "<span style='color:#ef4444; font-weight:bold;'>🔴 INACTIVA</span>"
 
     st.markdown(f"""
     <table class="req-table">
@@ -840,7 +825,7 @@ with tab_settings:
     # 2. DIAGNÓSTICO DEL SISTEMA (BOTÓN CENTRADO ÚNICAMENTE)
     col_d_center1, col_d_center2, col_d_center3 = st.columns([1, 2, 1])
     with col_d_center2:
-        if st.button("🔍 CHEQUEAR REQUISITOS DEL SISTEMA", key="btn_check_reqs_v8", type="primary", use_container_width=True):
+        if st.button("🔍 CHEQUEAR REQUISITOS DEL SISTEMA", key="btn_check_reqs_v9", type="primary", use_container_width=True):
             st.success(f"✔️ Sistema verificado: Python {sys.version.split()[0]} | CUDA GPU: {gpu_name}")
 
     st.write("")
@@ -879,7 +864,8 @@ with tab_settings:
 
 # ================= 5. PESTAÑA AUTOR =================
 with tab_author:
-    col_pic, col_desc = st.columns([1, 2])
+    # PROPORCIÓN DE COLUMNAS [1, 2.6] (+10% MÁS ANCHA LA COLUMNA DE DESCRIPCIÓN)
+    col_pic, col_desc = st.columns([1, 2.6])
     
     with col_pic:
         gif_file = "yo_animado.gif"
@@ -913,7 +899,7 @@ with tab_author:
     with col_desc:
         st.markdown("<h3 style='margin-top:0; font-family:\"Outfit\"; color:#3b82f6;'>Arquitecto Técnico & ConTech Developer</h3>", unsafe_allow_html=True)
         st.markdown("""
-        <div style='font-size: 14px; text-align: justify; line-height: 1.6;'>
+        <div style='font-size: 14.5px; text-align: justify; line-height: 1.7; color: #e2e8f0;'>
             ¡Hola! Soy Jose Manuel Caamaño, Arquitecto técnico ConTech!👋<br>
             <strong>Digital Product Lead | ConTech & Digital Twin SaaS | BIM, Energy Modeling & Sustainability | Data Analytics (SQL, Power BI)</strong>
             <br><br>
