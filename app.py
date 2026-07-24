@@ -8,7 +8,6 @@ import base64
 import re
 import difflib
 import urllib.parse
-import subprocess
 import torch
 import streamlit as st
 
@@ -61,37 +60,6 @@ if "last_results" not in st.session_state:
     st.session_state.last_results = []
 if "switch_to_convert" not in st.session_state:
     st.session_state.switch_to_convert = False
-
-# Función para abrir explorador nativo de Windows TRAÍDO AL PRIMER PLANO (TopMost)
-def select_folder_dialog(title="Seleccionar Carpeta"):
-    ps_file = os.path.join(CURRENT_DIR, "select_folder.ps1")
-    if os.path.exists(ps_file):
-        try:
-            res = subprocess.run(
-                ["powershell", "-ExecutionPolicy", "Bypass", "-File", ps_file],
-                capture_output=True,
-                text=True,
-                timeout=35
-            )
-            folder = res.stdout.strip()
-            if folder and os.path.isdir(folder):
-                return folder
-        except Exception:
-            pass
-
-    try:
-        import tkinter as tk
-        from tkinter import filedialog
-        root = tk.Tk()
-        root.withdraw()
-        root.attributes('-topmost', True)
-        root.lift()
-        root.focus_force()
-        folder = filedialog.askdirectory(title=title, master=root)
-        root.destroy()
-        return folder
-    except Exception:
-        return ""
 
 # Estilos CSS de Alta Calidad (+25% Más Ancho, Pestañas 100% Ancho y Botones Activos Azul Claro)
 st.markdown("""
@@ -427,7 +395,7 @@ with tab_home:
     """, unsafe_allow_html=True)
 
     # BOTÓN CONVERTIR QUE NAVEGA DIRECTAMENTE Y OCUPA EL 100% DEL ANCHO
-    if st.button("🚀 CONVERTIR", key="btn_inicio_to_convert_v9", type="primary", use_container_width=True):
+    if st.button("🚀 CONVERTIR", key="btn_inicio_to_convert_v10", type="primary", use_container_width=True):
         st.session_state.switch_to_convert = True
         st.rerun()
 
@@ -441,24 +409,19 @@ with tab_conv:
         col_src1, col_src2, col_src3 = st.columns(3)
         with col_src1:
             pdf_type = "primary" if st.session_state.src_choice == "PDF" else "secondary"
-            if st.button("📁 PDF ARCHIVO", key="btn_src_pdf_v9", type=pdf_type, use_container_width=True):
+            if st.button("📁 PDF ARCHIVO", key="btn_src_pdf_v10", type=pdf_type, use_container_width=True):
                 st.session_state.src_choice = "PDF"
                 st.rerun()
 
         with col_src2:
-            is_folder_active = (st.session_state.src_choice == "CARPETA" or bool(st.session_state.source_folder_path))
-            folder_type = "primary" if is_folder_active else "secondary"
-            folder_label = "📂 CARPETA" if not st.session_state.source_folder_path else f"✔️ CARPETA ({os.path.basename(st.session_state.source_folder_path)})"
-            if st.button(folder_label, key="btn_src_folder_v9", type=folder_type, use_container_width=True):
+            folder_type = "primary" if st.session_state.src_choice == "CARPETA" else "secondary"
+            if st.button("📂 CARPETA", key="btn_src_folder_v10", type=folder_type, use_container_width=True):
                 st.session_state.src_choice = "CARPETA"
-                chosen_f = select_folder_dialog("Seleccionar Carpeta de Origen con PDFs")
-                if chosen_f:
-                    st.session_state.source_folder_path = chosen_f
                 st.rerun()
 
         with col_src3:
             web_type = "primary" if st.session_state.src_choice == "WEB" else "secondary"
-            if st.button("🌐 PÁGINA WEB", key="btn_src_web_v9", type=web_type, use_container_width=True):
+            if st.button("🌐 PÁGINA WEB", key="btn_src_web_v10", type=web_type, use_container_width=True):
                 st.session_state.src_choice = "WEB"
                 st.rerun()
 
@@ -468,7 +431,7 @@ with tab_conv:
 
         st.write("")
         if st.session_state.src_choice == "PDF":
-            # PDF ARCHIVO: SELECCIÓN ÚNICA DE 1 SOLO ARCHIVO PDF
+            # PDF ARCHIVO: ACEPTA ÚNICAMENTE UN ÚNICO ARCHIVO PDF (accept_multiple_files=False)
             uploaded_file = st.file_uploader(label="", type=["pdf"], accept_multiple_files=False, label_visibility="collapsed")
             if uploaded_file:
                 files_to_process = [uploaded_file]
@@ -477,8 +440,13 @@ with tab_conv:
             page_range_filter = parse_page_range(page_range_str)
 
         elif st.session_state.src_choice == "CARPETA":
-            # MODO CARPETA COMPLETA: LÍNEA ÚNICA PARA PONER LA DIRECCIÓN DE LA CARPETA DONDE BUSCAR
-            src_path_input = st.text_input("Dirección de la carpeta donde buscar los archivos:", value=st.session_state.source_folder_path, placeholder="Ejemplo: C:\\Proyectos\\PDFs")
+            # CARPETA: IDÉNTICO A PÁGINA WEB, UN SOLO RECUADRO LIMPIO PARA PONER LA RUTA DE LA CARPETA
+            src_path_input = st.text_input(
+                label="",
+                value=st.session_state.source_folder_path,
+                placeholder="C:\\Proyectos\\PDFs",
+                label_visibility="collapsed"
+            )
             if src_path_input != st.session_state.source_folder_path:
                 st.session_state.source_folder_path = src_path_input
                 st.rerun()
@@ -493,7 +461,7 @@ with tab_conv:
                 else:
                     st.warning("⚠️ No se encontraron archivos .pdf en la carpeta indicada.")
             elif st.session_state.source_folder_path:
-                st.error("⚠️ La ruta de carpeta indicada no existe en el disco duro.")
+                st.error("⚠️ La ruta de carpeta indicada no existe en el ordenador.")
 
             page_range_str = st.text_input("🔍 Convertir solo páginas específicas (Opcional):", placeholder="Ejemplo: 1-5, 10")
             page_range_filter = parse_page_range(page_range_str)
@@ -508,25 +476,25 @@ with tab_conv:
         col_ext1, col_ext2, col_ext3, col_ext4 = st.columns(4)
         with col_ext1:
             t_rap = "primary" if st.session_state.ext_choice == "RÁPIDO" else "secondary"
-            if st.button("⚡ RÁPIDO", key="btn_ext_rapido_v9", type=t_rap, use_container_width=True):
+            if st.button("⚡ RÁPIDO", key="btn_ext_rapido_v10", type=t_rap, use_container_width=True):
                 st.session_state.ext_choice = "RÁPIDO"
                 st.rerun()
 
         with col_ext2:
             t_graf = "primary" if st.session_state.ext_choice == "GRÁFICO" else "secondary"
-            if st.button("🖼️ GRÁFICO", key="btn_ext_grafico_v9", type=t_graf, use_container_width=True):
+            if st.button("🖼️ GRÁFICO", key="btn_ext_grafico_v10", type=t_graf, use_container_width=True):
                 st.session_state.ext_choice = "GRÁFICO"
                 st.rerun()
 
         with col_ext3:
             t_tec = "primary" if st.session_state.ext_choice == "TÉCNICO" else "secondary"
-            if st.button("🏗️ TÉCNICO", key="btn_ext_tecnico_v9", type=t_tec, use_container_width=True):
+            if st.button("🏗️ TÉCNICO", key="btn_ext_tecnico_v10", type=t_tec, use_container_width=True):
                 st.session_state.ext_choice = "TÉCNICO"
                 st.rerun()
 
         with col_ext4:
             t_comp = "primary" if st.session_state.ext_choice == "COMPLETO" else "secondary"
-            if st.button("🧮 COMPLETO", key="btn_ext_completo_v9", type=t_comp, use_container_width=True):
+            if st.button("🧮 COMPLETO", key="btn_ext_completo_v10", type=t_comp, use_container_width=True):
                 st.session_state.ext_choice = "COMPLETO"
                 st.rerun()
 
@@ -548,105 +516,41 @@ with tab_conv:
             force_ocr_flag = True
             st.info("💡 **Modo Completo:** Fuerza OCR en escaneos y ecuaciones matemáticas + texto, imágenes, tablas y planos.")
 
-    # CONTENEDOR 3: EXPORTACIÓN Y PROCESAMIENTO (RESTAURADO DISEÑO ORIGINAL LIMPIO)
+    # CONTENEDOR 3: EXPORTACIÓN Y PROCESAMIENTO (RECUADRO DE TEXTO LIMPIO + BOTÓN EXPORTAR)
     with st.container(border=True):
         st.markdown("<h4 class='container-title'>EXPORTACIÓN Y PROCESAMIENTO</h4>", unsafe_allow_html=True)
 
-        is_dest_valid = bool(st.session_state.dest_folder_path) and os.path.exists(st.session_state.dest_folder_path)
-        dest_btn_type = "primary" if is_dest_valid else "secondary"
-        dest_btn_label = "📂 CARPETA DESTINO" if not st.session_state.dest_folder_path else f"✔️ CARPETA DESTINO ({os.path.basename(st.session_state.dest_folder_path)})"
-
-        if st.button(dest_btn_label, key="btn_browse_dest_folder_v9", type=dest_btn_type, use_container_width=True):
-            chosen_dest = select_folder_dialog("Seleccionar Carpeta de Destino para Guardar")
-            if chosen_dest:
-                st.session_state.dest_folder_path = chosen_dest
-                st.rerun()
-
-        if is_dest_valid:
-            st.success(f"📂 Carpeta de Destino seleccionada: `{st.session_state.dest_folder_path}`")
-        elif st.session_state.dest_folder_path:
-            st.warning(f"⚠️ La carpeta `{st.session_state.dest_folder_path}` no existe actualmente.")
-
-        def convert_url_to_md(url, extract_images=True):
-            if not WEB_EXTRACTOR_AVAILABLE:
-                import urllib.request
-                req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
-                with urllib.request.urlopen(req) as response:
-                    html_content = response.read().decode('utf-8', errors='ignore')
-                title_match = re.search(r'<title>(.*?)</title>', html_content, re.IGNORECASE)
-                title = title_match.group(1) if title_match else "Pagina_Web"
-                text = re.sub(r'<.*?>', '', html_content)
-                return title, text.strip(), {}
-
-            headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'}
-            resp = requests.get(url, headers=headers, timeout=15)
-            soup = BeautifulSoup(resp.text, 'html.parser')
-            page_title = soup.title.string.strip() if soup.title and soup.title.string else "Pagina_Web"
-            
-            for element in soup(["script", "style", "nav", "footer", "iframe", "noscript"]):
-                element.extract()
-
-            h2t = html2text.HTML2Text()
-            h2t.ignore_links = False
-            h2t.ignore_images = not extract_images
-            h2t.ignore_tables = False
-            markdown_body = h2t.handle(str(soup))
-            
-            extracted_images = {}
-            if extract_images:
-                img_tags = soup.find_all('img')
-                for i, img in enumerate(img_tags[:10]):
-                    src = img.get('src')
-                    if src:
-                        full_img_url = urllib.parse.urljoin(url, src)
-                        try:
-                            img_resp = requests.get(full_img_url, headers=headers, timeout=5)
-                            if img_resp.status_code == 200:
-                                from PIL import Image
-                                pil_img = Image.open(io.BytesIO(img_resp.content))
-                                extracted_images[f"image_{i+1}.png"] = pil_img
-                        except Exception:
-                            pass
-                            
-            return page_title, markdown_body, extracted_images
-
-        @st.cache_resource
-        def get_converter(disable_img_ext, lang, force_ocr):
-            from marker.models import create_model_dict
-            from marker.converters.pdf import PdfConverter
-            from marker.config.parser import ConfigParser
-
-            config_dict = {
-                "output_format": "markdown",
-                "disable_image_extraction": disable_img_ext,
-                "force_ocr": force_ocr
-            }
-            if lang: config_dict["languages"] = lang
-
-            config_parser = ConfigParser(config_dict)
-            artifact_dict = create_model_dict()
-            return PdfConverter(
-                config=config_parser.generate_config_dict(),
-                artifact_dict=artifact_dict,
-                processor_list=config_parser.get_processors(),
-                renderer=config_parser.get_renderer()
-            )
+        dest_path_input = st.text_input(
+            label="",
+            value=st.session_state.dest_folder_path,
+            placeholder="C:\\Users\\Jose\\Desktop\\PDF_TO_MD_EXPORTADOS",
+            label_visibility="collapsed"
+        )
+        if dest_path_input != st.session_state.dest_folder_path:
+            st.session_state.dest_folder_path = dest_path_input
+            st.rerun()
 
         has_valid_source = (files_to_process and len(files_to_process) > 0) or (st.session_state.src_choice == "WEB" and web_url_target)
-        has_valid_destination = st.session_state.dest_folder_path and os.path.exists(st.session_state.dest_folder_path)
+        has_valid_destination = bool(st.session_state.dest_folder_path)
 
         if not has_valid_destination and has_valid_source:
-            st.warning("⚠️ Selecciona una Carpeta de Destino válida en tu ordenador para exportar.")
+            st.warning("⚠️ Introduce la ruta de la carpeta de salida en el recuadro para habilitar el botón de exportación.")
 
         st.write("")
-        # BOTÓN PROCESAR OCUPANDO EL 100% DEL ANCHO
-        btn_go = st.button("🚀 EXPORTAR Y PROCESAR DOCUMENTOS", key="btn_run_export_final_v9", type="primary", disabled=not (has_valid_source and has_valid_destination), use_container_width=True)
+        # BOTÓN ÚNICO RENOMBRADO A "EXPORTAR" QUE OCUPA EL 100% DEL ANCHO
+        btn_go = st.button("🚀 EXPORTAR", key="btn_run_export_final_v10", type="primary", disabled=not (has_valid_source and has_valid_destination), use_container_width=True)
 
         if btn_go:
             progress_bar = st.progress(0)
             status_box = st.empty()
             start_time = time.time()
             converted_results = []
+
+            # Garantizar que la carpeta de salida exista
+            try:
+                os.makedirs(st.session_state.dest_folder_path, exist_ok=True)
+            except Exception:
+                pass
 
             if st.session_state.src_choice == "WEB":
                 progress_bar.progress(25)
@@ -825,7 +729,7 @@ with tab_settings:
     # 2. DIAGNÓSTICO DEL SISTEMA (BOTÓN CENTRADO ÚNICAMENTE)
     col_d_center1, col_d_center2, col_d_center3 = st.columns([1, 2, 1])
     with col_d_center2:
-        if st.button("🔍 CHEQUEAR REQUISITOS DEL SISTEMA", key="btn_check_reqs_v9", type="primary", use_container_width=True):
+        if st.button("🔍 CHEQUEAR REQUISITOS DEL SISTEMA", key="btn_check_reqs_v10", type="primary", use_container_width=True):
             st.success(f"✔️ Sistema verificado: Python {sys.version.split()[0]} | CUDA GPU: {gpu_name}")
 
     st.write("")
@@ -864,7 +768,6 @@ with tab_settings:
 
 # ================= 5. PESTAÑA AUTOR =================
 with tab_author:
-    # PROPORCIÓN DE COLUMNAS [1, 2.6] (+10% MÁS ANCHA LA COLUMNA DE DESCRIPCIÓN)
     col_pic, col_desc = st.columns([1, 2.6])
     
     with col_pic:
