@@ -198,6 +198,16 @@ st.markdown("""
         transform: none !important;
     }
 
+    /* TARJETA CON BORDE IZQUIERDO AZUL REPLICADA DE IMAGEN 001 */
+    .dev-active-card {
+        background: rgba(15, 23, 42, 0.75);
+        border-left: 4px solid #3b82f6;
+        border-radius: 8px;
+        padding: 18px 24px;
+        margin-top: 15px;
+        margin-bottom: 20px;
+    }
+
     /* TABLA ESTILO REQUISITOS IMAGEN 008 */
     .req-table {
         width: 100%;
@@ -368,7 +378,7 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# ----------------- 5 PESTAÑAS 100% ANCHO IGUALES (INTRO, CONVERTIR, ASISTENTE IA, REQUISITOS, AUTOR) -----------------
+# ----------------- 5 PESTAÑAS (INTRO, CONVERTIR, ASISTENTE IA, REQUISITOS, AUTOR) -----------------
 tab_home, tab_conv, tab_assistant, tab_settings, tab_author = st.tabs([
     "INTRO",
     "CONVERTIR",
@@ -383,26 +393,36 @@ with tab_home:
         st.markdown("<h4 class='container-title'>¿QUÉ PUEDES HACER CON ESTA VERSIÓN?</h4>", unsafe_allow_html=True)
         c_feat1, c_feat2 = st.columns(2)
         with c_feat1:
-            st.markdown("<div style='padding: 10px 0;'>📄 <strong>CONVERSIÓN INTELIGENTE DE PDFs AECO</strong></div>", unsafe_allow_html=True)
-            st.markdown("<div style='padding: 10px 0;'>🖼️ <strong>EXTRACCIÓN DE FOTOGRAFÍAS Y PLANOS</strong></div>", unsafe_allow_html=True)
-            st.markdown("<div style='padding: 10px 0;'>📊 <strong>RECONSTRUCCIÓN DE TABLAS Y EXCEL (.XLSX)</strong></div>", unsafe_allow_html=True)
+            st.markdown("<div style='padding: 8px 0;'>📄 <strong>Conversión por IA de PDF a Markdown limpio</strong></div>", unsafe_allow_html=True)
+            st.markdown("<div style='padding: 8px 0;'>📊 <strong>Extracción avanzada de tablas numéricas</strong></div>", unsafe_allow_html=True)
+            st.markdown("<div style='padding: 8px 0;'>🧮 <strong>Reconocimiento de fórmulas matemáticas (LaTeX)</strong></div>", unsafe_allow_html=True)
+            st.markdown("<div style='padding: 8px 0;'>📦 <strong>Empaquetado portable e independiente</strong></div>", unsafe_allow_html=True)
         with c_feat2:
-            st.markdown("<div style='padding: 10px 0;'>💎 <strong>EXPORTACIÓN PARA OBSIDIAN VAULT (.MD)</strong></div>", unsafe_allow_html=True)
-            st.markdown("<div style='padding: 10px 0;'>🌐 <strong>EXTRACTOR WEB (PÁGINAS URL A MARKDOWN)</strong></div>", unsafe_allow_html=True)
-            st.markdown("<div style='padding: 10px 0;'>💬 <strong>ASISTENTE IA OFFLINE Y DIAGNÓSTICO</strong></div>", unsafe_allow_html=True)
+            st.markdown("<div style='padding: 8px 0;'>📁 <strong>Procesamiento masivo de lotes de archivos</strong></div>", unsafe_allow_html=True)
+            st.markdown("<div style='padding: 8px 0;'>⚡ <strong>Aceleración por hardware dedicada (GPU CUDA)</strong></div>", unsafe_allow_html=True)
+            st.markdown("<div style='padding: 8px 0;'>🔌 <strong>Operación 100% offline y local sin internet</strong></div>", unsafe_allow_html=True)
+            st.markdown("<div style='padding: 8px 0;'>🎨 <strong>Interfaz fluida estilo Windows 11 acrílico</strong></div>", unsafe_allow_html=True)
 
-    with st.container(border=True):
-        st.markdown("<h4 class='container-title' style='color: #06b6d4 !important;'>🚀 HERRAMIENTA EN DESARROLLO ACTIVO</h4>", unsafe_allow_html=True)
-        st.markdown("<p style='margin-bottom: 0; color: #cbd5e1;'>Desarrollada para la comunidad de la Arquitectura Técnica (<strong>COATAC</strong>). Procesamiento 100% privado y local sin envío de datos a la nube.</p>", unsafe_allow_html=True)
+    # TARJETA CON BORDE IZQUIERDO REPLICADA EXACTAMENTE DE 001_intro.png
+    st.markdown("""
+    <div class="dev-active-card">
+        <strong style="color: #ffffff; font-size: 15px;">🔧 Herramienta en Desarrollo Activo:</strong> 
+        <span style="color: #cbd5e1; font-size: 14.5px;">
+        Este proyecto es de código abierto. Si tienes sugerencias o ideas de mejoras, ponte en contacto con el creador del repositorio de la App original 
+        <strong>Jose Manuel Caamaño</strong> via <a href="https://www.linkedin.com/in/jmcaamanog/" target="_blank" style="color: #38bdf8; text-decoration: underline;">LinkedIn</a>, 
+        el repositorio completo y libre o mediante su Colegio Profesional de la Arquitectura Técnica al que orgullosamente pertenece (<strong>COATAC</strong>).
+        </span>
+    </div>
+    """, unsafe_allow_html=True)
 
     col_c_btn1, col_c_btn2, col_c_btn3 = st.columns([1, 2, 1])
     with col_c_btn2:
         st.markdown("<div class='btn-active'>", unsafe_allow_html=True)
-        if st.button("🚀 CONVERTIR", key="btn_inicio_to_convert_v2"):
+        if st.button("🚀 CONVERTIR", key="btn_inicio_to_convert_v3"):
             st.info("💡 Haz clic en la pestaña **CONVERTIR** arriba para iniciar.")
         st.markdown("</div>", unsafe_allow_html=True)
 
-# ================= 2. PESTAÑA CONVERTIR (NATIVE CONTAINERS & NATIVE FOLDER PICKER) =================
+# ================= 2. PESTAÑA CONVERTIR =================
 with tab_conv:
 
     # CONTENEDOR 1: ORIGEN DE DATOS
@@ -412,21 +432,26 @@ with tab_conv:
         col_src1, col_src2, col_src3 = st.columns(3)
         with col_src1:
             if st.session_state.src_choice == "PDF": st.markdown("<div class='btn-active'>", unsafe_allow_html=True)
-            if st.button("📁 PDF ARCHIVO", key="btn_src_pdf_v3"):
+            if st.button("📁 PDF ARCHIVO", key="btn_src_pdf_v4"):
                 st.session_state.src_choice = "PDF"
                 st.rerun()
             if st.session_state.src_choice == "PDF": st.markdown("</div>", unsafe_allow_html=True)
 
         with col_src2:
-            if st.session_state.src_choice == "CARPETA": st.markdown("<div class='btn-active'>", unsafe_allow_html=True)
-            if st.button("📂 CARPETA ARCHIVOS", key="btn_src_folder_v3"):
+            is_folder_active = (st.session_state.src_choice == "CARPETA" or bool(st.session_state.source_folder_path))
+            if is_folder_active: st.markdown("<div class='btn-active'>", unsafe_allow_html=True)
+            folder_btn_label = "📂 CARPETA" if not st.session_state.source_folder_path else f"✔️ CARPETA ({os.path.basename(st.session_state.source_folder_path)})"
+            if st.button(folder_btn_label, key="btn_src_folder_v4"):
                 st.session_state.src_choice = "CARPETA"
+                chosen_f = select_folder_dialog("Seleccionar Carpeta de Origen con PDFs")
+                if chosen_f:
+                    st.session_state.source_folder_path = chosen_f
                 st.rerun()
-            if st.session_state.src_choice == "CARPETA": st.markdown("</div>", unsafe_allow_html=True)
+            if is_folder_active: st.markdown("</div>", unsafe_allow_html=True)
 
         with col_src3:
             if st.session_state.src_choice == "WEB": st.markdown("<div class='btn-active'>", unsafe_allow_html=True)
-            if st.button("🌐 PÁGINA WEB", key="btn_src_web_v3"):
+            if st.button("🌐 PÁGINA WEB", key="btn_src_web_v4"):
                 st.session_state.src_choice = "WEB"
                 st.rerun()
             if st.session_state.src_choice == "WEB": st.markdown("</div>", unsafe_allow_html=True)
@@ -445,16 +470,6 @@ with tab_conv:
             page_range_filter = parse_page_range(page_range_str)
 
         elif st.session_state.src_choice == "CARPETA":
-            c_f1, c_f2 = st.columns([2, 1])
-            with c_f1:
-                st.text_input("Carpeta seleccionada:", value=st.session_state.source_folder_path, placeholder="Ninguna carpeta seleccionada", disabled=True, label_visibility="collapsed")
-            with c_f2:
-                if st.button("📁 BUSCAR CARPETA EN ORDENADOR", key="btn_browse_src_folder"):
-                    chosen_f = select_folder_dialog("Seleccionar Carpeta de Origen con PDFs")
-                    if chosen_f:
-                        st.session_state.source_folder_path = chosen_f
-                        st.rerun()
-            
             if st.session_state.source_folder_path and os.path.isdir(st.session_state.source_folder_path):
                 pdf_files = [f for f in os.listdir(st.session_state.source_folder_path) if f.lower().endswith(".pdf")]
                 if pdf_files:
@@ -475,28 +490,28 @@ with tab_conv:
         col_ext1, col_ext2, col_ext3, col_ext4 = st.columns(4)
         with col_ext1:
             if st.session_state.ext_choice == "RÁPIDO": st.markdown("<div class='btn-active'>", unsafe_allow_html=True)
-            if st.button("⚡ RÁPIDO", key="btn_ext_rapido_v3"):
+            if st.button("⚡ RÁPIDO", key="btn_ext_rapido_v4"):
                 st.session_state.ext_choice = "RÁPIDO"
                 st.rerun()
             if st.session_state.ext_choice == "RÁPIDO": st.markdown("</div>", unsafe_allow_html=True)
 
         with col_ext2:
             if st.session_state.ext_choice == "GRÁFICO": st.markdown("<div class='btn-active'>", unsafe_allow_html=True)
-            if st.button("🖼️ GRÁFICO", key="btn_ext_grafico_v3"):
+            if st.button("🖼️ GRÁFICO", key="btn_ext_grafico_v4"):
                 st.session_state.ext_choice = "GRÁFICO"
                 st.rerun()
             if st.session_state.ext_choice == "GRÁFICO": st.markdown("</div>", unsafe_allow_html=True)
 
         with col_ext3:
             if st.session_state.ext_choice == "TÉCNICO": st.markdown("<div class='btn-active'>", unsafe_allow_html=True)
-            if st.button("🏗️ TÉCNICO", key="btn_ext_tecnico_v3"):
+            if st.button("🏗️ TÉCNICO", key="btn_ext_tecnico_v4"):
                 st.session_state.ext_choice = "TÉCNICO"
                 st.rerun()
             if st.session_state.ext_choice == "TÉCNICO": st.markdown("</div>", unsafe_allow_html=True)
 
         with col_ext4:
             if st.session_state.ext_choice == "COMPLETO": st.markdown("<div class='btn-active'>", unsafe_allow_html=True)
-            if st.button("🧮 COMPLETO", key="btn_ext_completo_v3"):
+            if st.button("🧮 COMPLETO", key="btn_ext_completo_v4"):
                 st.session_state.ext_choice = "COMPLETO"
                 st.rerun()
             if st.session_state.ext_choice == "COMPLETO": st.markdown("</div>", unsafe_allow_html=True)
@@ -523,15 +538,21 @@ with tab_conv:
     with st.container(border=True):
         st.markdown("<h4 class='container-title'>EXPORTACIÓN Y PROCESAMIENTO</h4>", unsafe_allow_html=True)
 
-        c_dest1, c_dest2 = st.columns([2, 1])
-        with c_dest1:
-            st.text_input("Carpeta de Destino:", value=st.session_state.dest_folder_path, placeholder="Ninguna carpeta de destino seleccionada", disabled=True, label_visibility="collapsed")
-        with c_dest2:
-            if st.button("📂 CARPETA DESTINO", key="btn_browse_dest_folder"):
+        is_dest_active = bool(st.session_state.dest_folder_path)
+        dest_btn_label = "📂 CARPETA DESTINO" if not st.session_state.dest_folder_path else f"✔️ CARPETA DESTINO ({os.path.basename(st.session_state.dest_folder_path)})"
+
+        col_dst1, col_dst2, col_dst3 = st.columns([1, 2, 1])
+        with col_dst2:
+            if is_dest_active: st.markdown("<div class='btn-active'>", unsafe_allow_html=True)
+            if st.button(dest_btn_label, key="btn_browse_dest_folder_v4"):
                 chosen_dest = select_folder_dialog("Seleccionar Carpeta de Destino para Guardar")
                 if chosen_dest:
                     st.session_state.dest_folder_path = chosen_dest
                     st.rerun()
+            if is_dest_active: st.markdown("</div>", unsafe_allow_html=True)
+
+        if is_dest_active:
+            st.success(f"📂 Carpeta de Destino seleccionada: `{st.session_state.dest_folder_path}`")
 
         def convert_url_to_md(url, extract_images=True):
             if not WEB_EXTRACTOR_AVAILABLE:
@@ -602,13 +623,13 @@ with tab_conv:
         has_valid_destination = st.session_state.dest_folder_path and os.path.exists(st.session_state.dest_folder_path)
 
         if not has_valid_destination and has_valid_source:
-            st.warning("⚠️ Haz clic en el botón **📂 CARPETA DESTINO** para indicar dónde guardar los archivos exportados.")
+            st.warning("⚠️ Pulsa el botón **📂 CARPETA DESTINO** para indicar en qué carpeta de tu ordenador se guardarán los resultados.")
 
         st.write("")
         col_run1, col_run2, col_run3 = st.columns([1, 2, 1])
         with col_run2:
             st.markdown("<div class='btn-active'>", unsafe_allow_html=True)
-            btn_go = st.button("🚀 EXPORTAR Y PROCESAR DOCUMENTOS", key="btn_run_export_final_v3", disabled=not (has_valid_source and has_valid_destination))
+            btn_go = st.button("🚀 EXPORTAR Y PROCESAR DOCUMENTOS", key="btn_run_export_final_v4", disabled=not (has_valid_source and has_valid_destination))
             st.markdown("</div>", unsafe_allow_html=True)
 
         if btn_go:
@@ -794,7 +815,7 @@ with tab_settings:
     col_d_center1, col_d_center2, col_d_center3 = st.columns([1, 2, 1])
     with col_d_center2:
         st.markdown("<div class='btn-active'>", unsafe_allow_html=True)
-        if st.button("🔍 CHEQUEAR REQUISITOS DEL SISTEMA", key="btn_check_reqs_v3"):
+        if st.button("🔍 CHEQUEAR REQUISITOS DEL SISTEMA", key="btn_check_reqs_v4"):
             st.success(f"✔️ Sistema verificado: Python {sys.version.split()[0]} | CUDA GPU: {gpu_name}")
         st.markdown("</div>", unsafe_allow_html=True)
 
