@@ -11,6 +11,14 @@ import urllib.parse
 import torch
 import streamlit as st
 
+# Tkinter para cuadro de diálogo nativo del Explorador de Windows
+try:
+    import tkinter as tk
+    from tkinter import filedialog
+    TKINTER_AVAILABLE = True
+except ImportError:
+    TKINTER_AVAILABLE = False
+
 # Importaciones condicionales para scraping web, excel y dataframes
 try:
     import requests
@@ -47,12 +55,30 @@ if "src_choice" not in st.session_state:
     st.session_state.src_choice = "PDF"
 if "ext_choice" not in st.session_state:
     st.session_state.ext_choice = "TÉCNICO"
+if "source_folder_path" not in st.session_state:
+    st.session_state.source_folder_path = ""
+if "dest_folder_path" not in st.session_state:
+    st.session_state.dest_folder_path = ""
 if "default_lang" not in st.session_state:
     st.session_state.default_lang = "es"
 if "last_results" not in st.session_state:
     st.session_state.last_results = []
 
-# Estilos CSS de Alta Calidad (+25% Más Ancho, Pestañas 100% Ancho y Botones Activos/Inactivos)
+# Función para abrir explorador nativo de Windows
+def select_folder_dialog(title="Seleccionar Carpeta"):
+    if not TKINTER_AVAILABLE:
+        return ""
+    try:
+        root = tk.Tk()
+        root.withdraw()
+        root.wm_attributes('-topmost', 1)
+        folder = filedialog.askdirectory(title=title, master=root)
+        root.destroy()
+        return folder
+    except Exception:
+        return ""
+
+# Estilos CSS de Alta Calidad (+25% Más Ancho, Pestañas 100% Ancho y Botones Activos Azul Claro)
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap');
@@ -92,7 +118,7 @@ st.markdown("""
         font-size: 15px !important;
         text-transform: uppercase !important;
         letter-spacing: 0.8px;
-        color: #3b82f6 !important;
+        color: #38bdf8 !important;
         margin-top: 0 !important;
         margin-bottom: 16px !important;
         text-align: left;
@@ -113,7 +139,7 @@ st.markdown("""
         line-height: 1.7 !important;
     }
     
-    /* PESTAÑAS 100% ANCHO REPARTIDAS A PARTES IGUALES EN EL ANCHO COMPLETO */
+    /* PESTAÑAS 100% ANCHO REPARTIDAS A PARTES IGUALES */
     div[data-testid="stTabs"] [data-baseweb="tab-list"] {
         display: flex !important;
         width: 100% !important;
@@ -139,35 +165,37 @@ st.markdown("""
         text-align: center !important;
         justify-content: center !important;
         padding: 0 !important;
-        transition: all 0.25s ease !important;
+        transition: none !important;
     }
 
     div[data-testid="stTabs"] [data-baseweb="tab-list"] button[aria-selected="true"] {
-        background: linear-gradient(135deg, #3b82f6, #06b6d4) !important;
+        background: linear-gradient(135deg, #00c6ff, #0072ff) !important;
         color: #ffffff !important;
-        box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4) !important;
+        box-shadow: 0 6px 20px rgba(0, 198, 255, 0.4) !important;
     }
 
-    /* BOTONES PRIMARIOS Y SECUNDARIOS */
+    /* BOTONES PRIMARIOS Y SECUNDARIOS SIN MOVERSE */
     .stButton>button {
         background: rgba(255, 255, 255, 0.05);
         color: #9ca3af;
         border: 1px solid rgba(255, 255, 255, 0.1);
-        padding: 12px 24px;
+        padding: 14px 24px;
         font-family: 'Outfit', sans-serif;
         font-size: 14px;
         font-weight: 700;
         border-radius: 10px;
-        transition: all 0.25s ease;
         width: 100%;
         text-transform: uppercase;
+        transform: none !important;
+        transition: background 0.2s ease !important;
     }
     
     .btn-active>button {
-        background: linear-gradient(135deg, #3b82f6, #06b6d4) !important;
+        background: linear-gradient(135deg, #00c6ff, #0072ff) !important;
         color: #ffffff !important;
         border: none !important;
-        box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4) !important;
+        box-shadow: 0 4px 15px rgba(0, 198, 255, 0.4) !important;
+        transform: none !important;
     }
 
     /* TABLA ESTILO REQUISITOS IMAGEN 008 */
@@ -199,7 +227,7 @@ st.markdown("""
     }
     
     .badge-num {
-        background: #3b82f6;
+        background: #0072ff;
         color: white;
         font-weight: bold;
         padding: 4px 10px;
@@ -320,30 +348,27 @@ def extract_tables_to_excel(md_text):
 
 # Encabezado Principal con Logo SVG
 st.markdown("""
-<div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; margin-top: 5px;">
-  <div style="display: flex; align-items: center; gap: 16px;">
-    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="url(#blue-cyan-grad)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-      <defs>
-        <linearGradient id="blue-cyan-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stop-color="#3b82f6" />
-          <stop offset="100%" stop-color="#06b6d4" />
-        </linearGradient>
-      </defs>
-      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-      <polyline points="14 2 14 8 20 8" />
-      <line x1="16" y1="13" x2="8" y2="13" />
-      <line x1="16" y1="17" x2="8" y2="17" />
-      <polyline points="10 9 9 9 8 9" />
-    </svg>
-    <div>
-      <h1 style="margin: 0; font-family: 'Outfit', sans-serif; font-weight: 800; background: linear-gradient(135deg, #3b82f6, #06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 30px; text-transform: uppercase;">PDF to .MD by jmcaamanog</h1>
-      <p style='font-size: 14px !important; color: #9ca3af; margin: 0;'>Analizador de documentos inteligente para ingenierías y edificación · Basado en IA Local</p>
-    </div>
+<div style="display: flex; align-items: center; gap: 16px; margin-bottom: 20px; margin-top: 5px;">
+  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="url(#blue-cyan-grad)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <defs>
+      <linearGradient id="blue-cyan-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#00c6ff" />
+        <stop offset="100%" stop-color="#0072ff" />
+      </linearGradient>
+    </defs>
+    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+    <polyline points="14 2 14 8 20 8" />
+    <line x1="16" y1="13" x2="8" y2="13" />
+    <line x1="16" y1="17" x2="8" y2="17" />
+    <polyline points="10 9 9 9 8 9" />
+  </svg>
+  <div>
+    <h1 style="margin: 0; font-family: 'Outfit', sans-serif; font-weight: 800; background: linear-gradient(135deg, #00c6ff, #0072ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 30px; text-transform: uppercase;">PDF to .MD by jmcaamanog</h1>
   </div>
 </div>
 """, unsafe_allow_html=True)
 
-# ----------------- 5 PESTAÑAS (INTRO, CONVERTIR, ASISTENTE IA, REQUISITOS, AUTOR) -----------------
+# ----------------- 5 PESTAÑAS 100% ANCHO IGUALES (INTRO, CONVERTIR, ASISTENTE IA, REQUISITOS, AUTOR) -----------------
 tab_home, tab_conv, tab_assistant, tab_settings, tab_author = st.tabs([
     "INTRO",
     "CONVERTIR",
@@ -354,12 +379,6 @@ tab_home, tab_conv, tab_assistant, tab_settings, tab_author = st.tabs([
 
 # ================= 1. PESTAÑA INTRO =================
 with tab_home:
-    st.markdown("<h2 style='margin-top:0; font-size: 24px;'>Bienvenido a PDF to .MD</h2>", unsafe_allow_html=True)
-    st.markdown("""
-    <p style='color: #cbd5e1; margin-bottom: 20px;'>Conversión inteligente y extracción local de documentos técnicos AECO a Markdown estructurado.</p>
-    """, unsafe_allow_html=True)
-
-    # CONTENEDOR 100% ENCAPSULADO CON NATIVE CONTAINER
     with st.container(border=True):
         st.markdown("<h4 class='container-title'>¿QUÉ PUEDES HACER CON ESTA VERSIÓN?</h4>", unsafe_allow_html=True)
         c_feat1, c_feat2 = st.columns(2)
@@ -379,35 +398,35 @@ with tab_home:
     col_c_btn1, col_c_btn2, col_c_btn3 = st.columns([1, 2, 1])
     with col_c_btn2:
         st.markdown("<div class='btn-active'>", unsafe_allow_html=True)
-        if st.button("🚀 COMENZAR A CONVERTIR DOCUMENTOS", key="btn_inicio_to_convert"):
-            st.info("💡 Por favor, haz clic arriba en la pestaña **CONVERTIR** para iniciar.")
+        if st.button("🚀 CONVERTIR", key="btn_inicio_to_convert_v2"):
+            st.info("💡 Haz clic en la pestaña **CONVERTIR** arriba para iniciar.")
         st.markdown("</div>", unsafe_allow_html=True)
 
-# ================= 2. PESTAÑA CONVERTIR (CONTENEDORES 100% NATIVOS) =================
+# ================= 2. PESTAÑA CONVERTIR (NATIVE CONTAINERS & NATIVE FOLDER PICKER) =================
 with tab_conv:
 
-    # CONTENEDOR 1: ORIGEN DE DATOS (TODO DENTRO DEL MARCO)
+    # CONTENEDOR 1: ORIGEN DE DATOS
     with st.container(border=True):
         st.markdown("<h4 class='container-title'>ORIGEN DE DATOS</h4>", unsafe_allow_html=True)
 
         col_src1, col_src2, col_src3 = st.columns(3)
         with col_src1:
             if st.session_state.src_choice == "PDF": st.markdown("<div class='btn-active'>", unsafe_allow_html=True)
-            if st.button("📁 PDF ARCHIVO", key="btn_src_pdf"):
+            if st.button("📁 PDF ARCHIVO", key="btn_src_pdf_v3"):
                 st.session_state.src_choice = "PDF"
                 st.rerun()
             if st.session_state.src_choice == "PDF": st.markdown("</div>", unsafe_allow_html=True)
 
         with col_src2:
             if st.session_state.src_choice == "CARPETA": st.markdown("<div class='btn-active'>", unsafe_allow_html=True)
-            if st.button("📂 CARPETA ARCHIVOS", key="btn_src_folder"):
+            if st.button("📂 CARPETA ARCHIVOS", key="btn_src_folder_v3"):
                 st.session_state.src_choice = "CARPETA"
                 st.rerun()
             if st.session_state.src_choice == "CARPETA": st.markdown("</div>", unsafe_allow_html=True)
 
         with col_src3:
             if st.session_state.src_choice == "WEB": st.markdown("<div class='btn-active'>", unsafe_allow_html=True)
-            if st.button("🌐 PÁGINA WEB", key="btn_src_web"):
+            if st.button("🌐 PÁGINA WEB", key="btn_src_web_v3"):
                 st.session_state.src_choice = "WEB"
                 st.rerun()
             if st.session_state.src_choice == "WEB": st.markdown("</div>", unsafe_allow_html=True)
@@ -418,57 +437,66 @@ with tab_conv:
 
         st.write("")
         if st.session_state.src_choice == "PDF":
-            uploaded_files = st.file_uploader("Arrastra o selecciona tus archivos PDF:", type=["pdf"], accept_multiple_files=True)
+            uploaded_files = st.file_uploader(label="", type=["pdf"], accept_multiple_files=True, label_visibility="collapsed")
             if uploaded_files:
                 files_to_process = uploaded_files
-                st.success(f"✔️ {len(uploaded_files)} PDF(s) listo(s) para procesar.")
+                st.success(f"✔️ {len(uploaded_files)} PDF(s) seleccionado(s).")
             page_range_str = st.text_input("🔍 Convertir solo páginas específicas (Opcional):", placeholder="Ejemplo: 1-5, 10, 15-20")
             page_range_filter = parse_page_range(page_range_str)
 
         elif st.session_state.src_choice == "CARPETA":
-            folder_path = st.text_input("Ruta absoluta de la carpeta de PDFs:", placeholder="Ejemplo: C:\\Proyectos\\PDFs")
+            c_f1, c_f2 = st.columns([2, 1])
+            with c_f1:
+                st.text_input("Carpeta seleccionada:", value=st.session_state.source_folder_path, placeholder="Ninguna carpeta seleccionada", disabled=True, label_visibility="collapsed")
+            with c_f2:
+                if st.button("📁 BUSCAR CARPETA EN ORDENADOR", key="btn_browse_src_folder"):
+                    chosen_f = select_folder_dialog("Seleccionar Carpeta de Origen con PDFs")
+                    if chosen_f:
+                        st.session_state.source_folder_path = chosen_f
+                        st.rerun()
+            
+            if st.session_state.source_folder_path and os.path.isdir(st.session_state.source_folder_path):
+                pdf_files = [f for f in os.listdir(st.session_state.source_folder_path) if f.lower().endswith(".pdf")]
+                if pdf_files:
+                    st.success(f"✔️ Se encontraron {len(pdf_files)} archivos PDF en: `{st.session_state.source_folder_path}`")
+                    for f in pdf_files:
+                        fp = os.path.join(st.session_state.source_folder_path, f)
+                        files_to_process.append({"name": f, "path": fp})
             page_range_str = st.text_input("🔍 Convertir solo páginas específicas (Opcional):", placeholder="Ejemplo: 1-5, 10")
             page_range_filter = parse_page_range(page_range_str)
-            if folder_path and os.path.isdir(folder_path):
-                pdf_files = [f for f in os.listdir(folder_path) if f.lower().endswith(".pdf")]
-                if pdf_files:
-                    st.success(f"✔️ Se encontraron {len(pdf_files)} archivos PDF.")
-                    for f in pdf_files:
-                        fp = os.path.join(folder_path, f)
-                        files_to_process.append({"name": f, "path": fp})
 
         elif st.session_state.src_choice == "WEB":
-            web_url_target = st.text_input("Dirección Web (URL):", placeholder="https://ejemplo.com/articulo-tecnico")
+            web_url_target = st.text_input(label="", placeholder="https://ejemplo.com/articulo-tecnico", label_visibility="collapsed")
 
-    # CONTENEDOR 2: TIPO DE EXTRACCIÓN (TODO DENTRO DEL MARCO)
+    # CONTENEDOR 2: TIPO DE EXTRACCIÓN
     with st.container(border=True):
         st.markdown("<h4 class='container-title'>TIPO DE EXTRACCIÓN</h4>", unsafe_allow_html=True)
 
         col_ext1, col_ext2, col_ext3, col_ext4 = st.columns(4)
         with col_ext1:
             if st.session_state.ext_choice == "RÁPIDO": st.markdown("<div class='btn-active'>", unsafe_allow_html=True)
-            if st.button("⚡ RÁPIDO", key="btn_ext_rapido"):
+            if st.button("⚡ RÁPIDO", key="btn_ext_rapido_v3"):
                 st.session_state.ext_choice = "RÁPIDO"
                 st.rerun()
             if st.session_state.ext_choice == "RÁPIDO": st.markdown("</div>", unsafe_allow_html=True)
 
         with col_ext2:
             if st.session_state.ext_choice == "GRÁFICO": st.markdown("<div class='btn-active'>", unsafe_allow_html=True)
-            if st.button("🖼️ GRÁFICO", key="btn_ext_grafico"):
+            if st.button("🖼️ GRÁFICO", key="btn_ext_grafico_v3"):
                 st.session_state.ext_choice = "GRÁFICO"
                 st.rerun()
             if st.session_state.ext_choice == "GRÁFICO": st.markdown("</div>", unsafe_allow_html=True)
 
         with col_ext3:
             if st.session_state.ext_choice == "TÉCNICO": st.markdown("<div class='btn-active'>", unsafe_allow_html=True)
-            if st.button("🏗️ TÉCNICO", key="btn_ext_tecnico"):
+            if st.button("🏗️ TÉCNICO", key="btn_ext_tecnico_v3"):
                 st.session_state.ext_choice = "TÉCNICO"
                 st.rerun()
             if st.session_state.ext_choice == "TÉCNICO": st.markdown("</div>", unsafe_allow_html=True)
 
         with col_ext4:
             if st.session_state.ext_choice == "COMPLETO": st.markdown("<div class='btn-active'>", unsafe_allow_html=True)
-            if st.button("🧮 COMPLETO", key="btn_ext_completo"):
+            if st.button("🧮 COMPLETO", key="btn_ext_completo_v3"):
                 st.session_state.ext_choice = "COMPLETO"
                 st.rerun()
             if st.session_state.ext_choice == "COMPLETO": st.markdown("</div>", unsafe_allow_html=True)
@@ -491,15 +519,19 @@ with tab_conv:
             force_ocr_flag = True
             st.info("💡 **Modo Completo:** Fuerza OCR en escaneos y ecuaciones matemáticas + texto, imágenes, tablas y planos.")
 
-    # CONTENEDOR 3: EXPORTACIÓN Y PROCESAMIENTO (EXPORTACIÓN OBLIGATORIA EN ORDENADOR)
+    # CONTENEDOR 3: EXPORTACIÓN Y PROCESAMIENTO
     with st.container(border=True):
         st.markdown("<h4 class='container-title'>EXPORTACIÓN Y PROCESAMIENTO</h4>", unsafe_allow_html=True)
 
-        custom_output_folder = st.text_input(
-            "📂 Seleccionar Carpeta de Destino en el ordenador (Obligatorio):",
-            placeholder="Ejemplo: C:\\Users\\Jose\\Desktop\\Documentos_Exportados",
-            key="mandatory_output_folder_v2"
-        )
+        c_dest1, c_dest2 = st.columns([2, 1])
+        with c_dest1:
+            st.text_input("Carpeta de Destino:", value=st.session_state.dest_folder_path, placeholder="Ninguna carpeta de destino seleccionada", disabled=True, label_visibility="collapsed")
+        with c_dest2:
+            if st.button("📂 CARPETA DESTINO", key="btn_browse_dest_folder"):
+                chosen_dest = select_folder_dialog("Seleccionar Carpeta de Destino para Guardar")
+                if chosen_dest:
+                    st.session_state.dest_folder_path = chosen_dest
+                    st.rerun()
 
         def convert_url_to_md(url, extract_images=True):
             if not WEB_EXTRACTOR_AVAILABLE:
@@ -567,14 +599,17 @@ with tab_conv:
             )
 
         has_valid_source = (files_to_process and len(files_to_process) > 0) or (st.session_state.src_choice == "WEB" and web_url_target)
-        has_valid_destination = custom_output_folder and os.path.exists(custom_output_folder)
+        has_valid_destination = st.session_state.dest_folder_path and os.path.exists(st.session_state.dest_folder_path)
 
         if not has_valid_destination and has_valid_source:
-            st.warning("⚠️ Debes indicar una Carpeta de Destino válida en tu ordenador para exportar los archivos.")
+            st.warning("⚠️ Haz clic en el botón **📂 CARPETA DESTINO** para indicar dónde guardar los archivos exportados.")
 
-        st.markdown("<div class='btn-active'>", unsafe_allow_html=True)
-        btn_go = st.button("🚀 EXPORTAR Y PROCESAR DOCUMENTOS", key="btn_run_export_final_v2", disabled=not (has_valid_source and has_valid_destination))
-        st.markdown("</div>", unsafe_allow_html=True)
+        st.write("")
+        col_run1, col_run2, col_run3 = st.columns([1, 2, 1])
+        with col_run2:
+            st.markdown("<div class='btn-active'>", unsafe_allow_html=True)
+            btn_go = st.button("🚀 EXPORTAR Y PROCESAR DOCUMENTOS", key="btn_run_export_final_v3", disabled=not (has_valid_source and has_valid_destination))
+            st.markdown("</div>", unsafe_allow_html=True)
 
         if btn_go:
             progress_bar = st.progress(0)
@@ -640,13 +675,13 @@ with tab_conv:
                 st.session_state.last_results = converted_results
                 try:
                     for res in converted_results:
-                        out_p = os.path.join(custom_output_folder, res["name"].replace(".pdf", "") + ".md")
+                        out_p = os.path.join(st.session_state.dest_folder_path, res["name"].replace(".pdf", "") + ".md")
                         with open(out_p, "w", encoding="utf-8") as f:
                             f.write(res["markdown"])
-                        obs_p = os.path.join(custom_output_folder, "OBSIDIAN_" + res["name"].replace(".pdf", "") + ".md")
+                        obs_p = os.path.join(st.session_state.dest_folder_path, "OBSIDIAN_" + res["name"].replace(".pdf", "") + ".md")
                         with open(obs_p, "w", encoding="utf-8") as f:
                             f.write(format_for_obsidian(res["markdown"], res["name"]))
-                    st.success(f"📂 Archivos Markdown y formato Obsidian guardados en: `{custom_output_folder}`")
+                    st.success(f"📂 Archivos Markdown y formato Obsidian guardados en: `{st.session_state.dest_folder_path}`")
                 except Exception as ex:
                     st.error(f"Error al guardar en carpeta: {ex}")
 
@@ -759,7 +794,7 @@ with tab_settings:
     col_d_center1, col_d_center2, col_d_center3 = st.columns([1, 2, 1])
     with col_d_center2:
         st.markdown("<div class='btn-active'>", unsafe_allow_html=True)
-        if st.button("🔍 CHEQUEAR REQUISITOS DEL SISTEMA", key="btn_check_reqs_v2"):
+        if st.button("🔍 CHEQUEAR REQUISITOS DEL SISTEMA", key="btn_check_reqs_v3"):
             st.success(f"✔️ Sistema verificado: Python {sys.version.split()[0]} | CUDA GPU: {gpu_name}")
         st.markdown("</div>", unsafe_allow_html=True)
 
@@ -853,7 +888,7 @@ with tab_author:
           </a>
           <a href="https://www.linkedin.com/in/jmcaamanog/" target="_blank" style="text-decoration: none; display: inline-flex; align-items: center; gap: 10px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 10px 20px; color: #ffffff; font-family: 'Outfit', sans-serif; font-weight: 600; font-size: 14px; transition: all 0.3s ease;">
             <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24" style="vertical-align: middle;">
-              <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.779-1.75-1.75s.784-1.75 1.75-1.75 1.75.779 1.75 1.75-.784 1.75-1.75 1.75zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+              <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.779-1.75-1.75s.784-1.75 1.75-1.75 1.75.779 1.75 1.75-.784 1.75-1.75-1.75zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
             </svg>
             <span>LinkedIn</span>
           </a>
