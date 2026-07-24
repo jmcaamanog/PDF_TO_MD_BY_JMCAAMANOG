@@ -8,6 +8,7 @@ import base64
 import re
 import difflib
 import urllib.parse
+import subprocess
 import torch
 import streamlit as st
 
@@ -60,6 +61,37 @@ if "last_results" not in st.session_state:
     st.session_state.last_results = []
 if "switch_to_convert" not in st.session_state:
     st.session_state.switch_to_convert = False
+
+# Función para abrir explorador nativo de Windows TRAÍDO AL PRIMER PLANO (TopMost)
+def select_folder_dialog(title="Seleccionar Carpeta"):
+    ps_file = os.path.join(CURRENT_DIR, "select_folder.ps1")
+    if os.path.exists(ps_file):
+        try:
+            res = subprocess.run(
+                ["powershell", "-ExecutionPolicy", "Bypass", "-File", ps_file],
+                capture_output=True,
+                text=True,
+                timeout=35
+            )
+            folder = res.stdout.strip()
+            if folder and os.path.isdir(folder):
+                return folder
+        except Exception:
+            pass
+
+    try:
+        import tkinter as tk
+        from tkinter import filedialog
+        root = tk.Tk()
+        root.withdraw()
+        root.attributes('-topmost', True)
+        root.lift()
+        root.focus_force()
+        folder = filedialog.askdirectory(title=title, master=root)
+        root.destroy()
+        return folder
+    except Exception:
+        return ""
 
 # Estilos CSS de Alta Calidad (+25% Más Ancho, Pestañas 100% Ancho y Botones Activos Azul Claro)
 st.markdown("""
@@ -395,7 +427,7 @@ with tab_home:
     """, unsafe_allow_html=True)
 
     # BOTÓN CONVERTIR QUE NAVEGA DIRECTAMENTE Y OCUPA EL 100% DEL ANCHO
-    if st.button("🚀 CONVERTIR", key="btn_inicio_to_convert_v7", type="primary", use_container_width=True):
+    if st.button("🚀 CONVERTIR", key="btn_inicio_to_convert_v8", type="primary", use_container_width=True):
         st.session_state.switch_to_convert = True
         st.rerun()
 
@@ -409,20 +441,24 @@ with tab_conv:
         col_src1, col_src2, col_src3 = st.columns(3)
         with col_src1:
             pdf_type = "primary" if st.session_state.src_choice == "PDF" else "secondary"
-            if st.button("📁 PDF ARCHIVO", key="btn_src_pdf_v7", type=pdf_type, use_container_width=True):
+            if st.button("📁 PDF ARCHIVO", key="btn_src_pdf_v8", type=pdf_type, use_container_width=True):
                 st.session_state.src_choice = "PDF"
                 st.rerun()
 
         with col_src2:
             is_folder_active = (st.session_state.src_choice == "CARPETA" or bool(st.session_state.source_folder_path))
             folder_type = "primary" if is_folder_active else "secondary"
-            if st.button("📂 CARPETA ARCHIVOS", key="btn_src_folder_v7", type=folder_type, use_container_width=True):
+            folder_label = "📂 CARPETA" if not st.session_state.source_folder_path else f"✔️ CARPETA ({os.path.basename(st.session_state.source_folder_path)})"
+            if st.button(folder_label, key="btn_src_folder_v8", type=folder_type, use_container_width=True):
                 st.session_state.src_choice = "CARPETA"
+                chosen_f = select_folder_dialog("Seleccionar Carpeta de Origen con PDFs")
+                if chosen_f:
+                    st.session_state.source_folder_path = chosen_f
                 st.rerun()
 
         with col_src3:
             web_type = "primary" if st.session_state.src_choice == "WEB" else "secondary"
-            if st.button("🌐 PÁGINA WEB", key="btn_src_web_v7", type=web_type, use_container_width=True):
+            if st.button("🌐 PÁGINA WEB", key="btn_src_web_v8", type=web_type, use_container_width=True):
                 st.session_state.src_choice = "WEB"
                 st.rerun()
 
@@ -432,22 +468,17 @@ with tab_conv:
 
         st.write("")
         if st.session_state.src_choice == "PDF":
-            uploaded_files = st.file_uploader(label="", type=["pdf"], accept_multiple_files=True, label_visibility="collapsed")
-            if uploaded_files:
-                files_to_process = uploaded_files
-                st.success(f"✔️ {len(uploaded_files)} PDF(s) seleccionado(s).")
+            # PDF ARCHIVO: ACEPTA ÚNICAMENTE UN ÚNICO ARCHIVO PDF (accept_multiple_files=False)
+            uploaded_file = st.file_uploader(label="", type=["pdf"], accept_multiple_files=False, label_visibility="collapsed")
+            if uploaded_file:
+                files_to_process = [uploaded_file]
+                st.success(f"✔️ 1 archivo PDF seleccionado: `{uploaded_file.name}`")
             page_range_str = st.text_input("🔍 Convertir solo páginas específicas (Opcional):", placeholder="Ejemplo: 1-5, 10, 15-20")
             page_range_filter = parse_page_range(page_range_str)
 
         elif st.session_state.src_choice == "CARPETA":
-            st.info("💡 **Subida Nativa de Carpeta o Lote de PDFs:** Puedes arrastrar todos los PDFs de tu carpeta aquí o indicar la ruta en tu ordenador:")
-            folder_files = st.file_uploader("Selecciona todos los PDFs de la carpeta:", type=["pdf"], accept_multiple_files=True, key="folder_batch_uploader")
-            if folder_files:
-                files_to_process = folder_files
-                st.success(f"✔️ {len(folder_files)} archivo(s) PDF cargado(s) de la carpeta.")
-
-            st.write("---")
-            src_path_input = st.text_input("O introduce la Ruta Local de la carpeta en tu ordenador:", value=st.session_state.source_folder_path, placeholder="Ejemplo: C:\\Users\\Jose\\Desktop\\Mis_PDFs")
+            # MODO CARPETA COMPLETA
+            src_path_input = st.text_input("Introduce o confirma la Ruta de la carpeta en tu ordenador:", value=st.session_state.source_folder_path, placeholder="Ejemplo: C:\\Users\\Jose\\Desktop\\Mis_PDFs")
             if src_path_input != st.session_state.source_folder_path:
                 st.session_state.source_folder_path = src_path_input
                 st.rerun()
@@ -455,10 +486,15 @@ with tab_conv:
             if st.session_state.source_folder_path and os.path.isdir(st.session_state.source_folder_path):
                 pdf_files = [f for f in os.listdir(st.session_state.source_folder_path) if f.lower().endswith(".pdf")]
                 if pdf_files:
-                    st.success(f"✔️ Se encontraron {len(pdf_files)} archivos PDF en la ruta: `{st.session_state.source_folder_path}`")
+                    st.success(f"✔️ Se encontraron {len(pdf_files)} archivos PDF en la carpeta: `{st.session_state.source_folder_path}`")
                     for f in pdf_files:
                         fp = os.path.join(st.session_state.source_folder_path, f)
                         files_to_process.append({"name": f, "path": fp})
+                else:
+                    st.warning("⚠️ No se encontraron archivos .pdf en la carpeta indicada.")
+            elif st.session_state.source_folder_path:
+                st.error("⚠️ La ruta de carpeta indicada no existe en el disco duro.")
+
             page_range_str = st.text_input("🔍 Convertir solo páginas específicas (Opcional):", placeholder="Ejemplo: 1-5, 10")
             page_range_filter = parse_page_range(page_range_str)
 
@@ -472,25 +508,25 @@ with tab_conv:
         col_ext1, col_ext2, col_ext3, col_ext4 = st.columns(4)
         with col_ext1:
             t_rap = "primary" if st.session_state.ext_choice == "RÁPIDO" else "secondary"
-            if st.button("⚡ RÁPIDO", key="btn_ext_rapido_v7", type=t_rap, use_container_width=True):
+            if st.button("⚡ RÁPIDO", key="btn_ext_rapido_v8", type=t_rap, use_container_width=True):
                 st.session_state.ext_choice = "RÁPIDO"
                 st.rerun()
 
         with col_ext2:
             t_graf = "primary" if st.session_state.ext_choice == "GRÁFICO" else "secondary"
-            if st.button("🖼️ GRÁFICO", key="btn_ext_grafico_v7", type=t_graf, use_container_width=True):
+            if st.button("🖼️ GRÁFICO", key="btn_ext_grafico_v8", type=t_graf, use_container_width=True):
                 st.session_state.ext_choice = "GRÁFICO"
                 st.rerun()
 
         with col_ext3:
             t_tec = "primary" if st.session_state.ext_choice == "TÉCNICO" else "secondary"
-            if st.button("🏗️ TÉCNICO", key="btn_ext_tecnico_v7", type=t_tec, use_container_width=True):
+            if st.button("🏗️ TÉCNICO", key="btn_ext_tecnico_v8", type=t_tec, use_container_width=True):
                 st.session_state.ext_choice = "TÉCNICO"
                 st.rerun()
 
         with col_ext4:
             t_comp = "primary" if st.session_state.ext_choice == "COMPLETO" else "secondary"
-            if st.button("🧮 COMPLETO", key="btn_ext_completo_v7", type=t_comp, use_container_width=True):
+            if st.button("🧮 COMPLETO", key="btn_ext_completo_v8", type=t_comp, use_container_width=True):
                 st.session_state.ext_choice = "COMPLETO"
                 st.rerun()
 
@@ -518,14 +554,15 @@ with tab_conv:
 
         is_dest_valid = bool(st.session_state.dest_folder_path) and os.path.exists(st.session_state.dest_folder_path)
         dest_btn_type = "primary" if is_dest_valid else "secondary"
+        dest_btn_label = "📂 CARPETA DESTINO" if not st.session_state.dest_folder_path else f"✔️ CARPETA DESTINO ({os.path.basename(st.session_state.dest_folder_path)})"
 
-        st.markdown("<div style='margin-bottom: 8px;'><strong>Carpeta de Destino en tu ordenador:</strong></div>", unsafe_allow_html=True)
-        dest_path_input = st.text_input(
-            label="",
-            value=st.session_state.dest_folder_path,
-            placeholder="Ejemplo: C:\\Users\\Jose\\Desktop\\PDF_TO_MD_EXPORTADOS",
-            label_visibility="collapsed"
-        )
+        if st.button(dest_btn_label, key="btn_browse_dest_folder_v8", type=dest_btn_type, use_container_width=True):
+            chosen_dest = select_folder_dialog("Seleccionar Carpeta de Destino para Guardar")
+            if chosen_dest:
+                st.session_state.dest_folder_path = chosen_dest
+                st.rerun()
+
+        dest_path_input = st.text_input("Ruta de la carpeta de Destino en tu ordenador:", value=st.session_state.dest_folder_path, placeholder="Ejemplo: C:\\Users\\Jose\\Desktop\\PDF_TO_MD_EXPORTADOS")
         if dest_path_input != st.session_state.dest_folder_path:
             st.session_state.dest_folder_path = dest_path_input
             st.rerun()
@@ -535,7 +572,7 @@ with tab_conv:
             with col_mk1:
                 st.warning(f"⚠️ La carpeta `{st.session_state.dest_folder_path}` aún no existe.")
             with col_mk2:
-                if st.button("📁 CREAR CARPETA AHORA", key="btn_create_dest_dir", type="primary", use_container_width=True):
+                if st.button("📁 CREAR CARPETA AHORA", key="btn_create_dest_dir_v8", type="primary", use_container_width=True):
                     try:
                         os.makedirs(st.session_state.dest_folder_path, exist_ok=True)
                         st.success("✔️ Carpeta creada correctamente.")
@@ -618,7 +655,7 @@ with tab_conv:
 
         st.write("")
         # BOTÓN PROCESAR OCUPANDO EL 100% DEL ANCHO
-        btn_go = st.button("🚀 EXPORTAR Y PROCESAR DOCUMENTOS", key="btn_run_export_final_v7", type="primary", disabled=not (has_valid_source and has_valid_destination), use_container_width=True)
+        btn_go = st.button("🚀 EXPORTAR Y PROCESAR DOCUMENTOS", key="btn_run_export_final_v8", type="primary", disabled=not (has_valid_source and has_valid_destination), use_container_width=True)
 
         if btn_go:
             progress_bar = st.progress(0)
@@ -767,7 +804,7 @@ with tab_settings:
     vram_alloc = f"{torch.cuda.memory_allocated(0)/(1024**2):.1f} MB" if cuda_avail else "N/A"
     vram_res = f"{torch.cuda.memory_reserved(0)/(1024**2):.1f} MB" if cuda_avail else "N/A"
     
-    cuda_badge_html = "<span style='color:#4ade80; font-weight:bold;'>🟢 ACTIVA (Acelerada por GPU)</span>" if cuda_avail else "<span style='color:#ef4444; font-weight:bold;'>🔴 INACTIVA</span>"
+    cuda_badge_html = "<span style='color:#4ade80; font-weight:bold;'>🟢 ACTIVA (Acelerada por GPU)</span>" if cuda_avail else "<span style='color:#ef4444; font-warning:bold;'>🔴 INACTIVA</span>"
 
     st.markdown(f"""
     <table class="req-table">
@@ -803,7 +840,7 @@ with tab_settings:
     # 2. DIAGNÓSTICO DEL SISTEMA (BOTÓN CENTRADO ÚNICAMENTE)
     col_d_center1, col_d_center2, col_d_center3 = st.columns([1, 2, 1])
     with col_d_center2:
-        if st.button("🔍 CHEQUEAR REQUISITOS DEL SISTEMA", key="btn_check_reqs_v7", type="primary", use_container_width=True):
+        if st.button("🔍 CHEQUEAR REQUISITOS DEL SISTEMA", key="btn_check_reqs_v8", type="primary", use_container_width=True):
             st.success(f"✔️ Sistema verificado: Python {sys.version.split()[0]} | CUDA GPU: {gpu_name}")
 
     st.write("")
